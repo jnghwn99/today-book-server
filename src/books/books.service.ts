@@ -8,22 +8,31 @@ export class BooksService {
   constructor(private readonly httpService: HttpService) {}
 
   async getBooks() {
-    const ttbKey = process.env.API_TTB_KEY;
-    const url = `http://www.aladin.co.kr/ttb/api/ItemList.aspx?ttbkey=${ttbKey}&QueryType=Bestseller&MaxResults=10&start=1&SearchTarget=Book&output=js&Version=20131101`;
-    const response = await this.httpService.axiosRef.get(url);
+    const TTBKey = process.env.API_TTB_KEY;
+    const baseUrl = `http://www.aladin.co.kr/ttb/api/ItemList.aspx`;
+    const queryParams = `?TTBKey=${TTBKey}&QueryType=Bestseller&MaxResults=20&start=1&SearchTarget=Book&Output=js&Version=20131101`;
+    const fullUrl = baseUrl + queryParams;
+    const response = await this.httpService.axiosRef.get(fullUrl);
     return response.data;
+  }
+
+  findAll() {
+    return `This action returns all books`;
+  }
+
+  async findOne(isbn: string) {
+    const TTBKey = process.env.API_TTB_KEY;
+    const baseUrl = `http://www.aladin.co.kr/ttb/api/ItemLookUp.aspx`;
+    const queryParams = `?TTBKey=${TTBKey}&ItemId=${isbn}&ItemIdType=ISBN13&output=js&Version=20131101`;
+    const fullUrl = baseUrl + queryParams;
+    // console.log(`[BooksService] Requesting URL: ${fullUrl}`); // 3. 최종 요청 URL 확인
+    const response = await this.httpService.axiosRef.get(fullUrl);
+    // console.log(response.data);
+    return response.data.item[0];
   }
 
   // create(createBookDto: CreateBookDto) {
   //   return 'This action adds a new book';
-  // }
-
-  // findAll() {
-  //   return `This action returns all books`;
-  // }
-
-  // findOne(id: number) {
-  //   return `This action returns a #${id} book`;
   // }
 
   // update(id: number, updateBookDto: UpdateBookDto) {
