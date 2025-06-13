@@ -11,15 +11,15 @@ import {
 import { BooksService } from './books.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
-import { FindBooksQueryDto } from './dto/find-book-query.dto';
+import { FindBooksQueryDto } from './dto/findAll-book.dto';
 
 @Controller('api/books')
 export class BooksController {
   constructor(private readonly booksService: BooksService) {}
 
   @Get()
-  findAll(@Query() query: FindBooksQueryDto) {
-    return this.booksService.findAll();
+  findAll(@Query() queryDto: FindBooksQueryDto) {
+    return this.booksService.findAll(queryDto);
   }
 
   @Get(':isbn')
