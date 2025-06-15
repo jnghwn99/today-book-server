@@ -12,14 +12,20 @@ import { BooksService } from './books.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 import { FindBooksQueryDto } from './dto/findAll-book.dto';
+import { SearchBooksQueryDto } from './dto/search-book.dto';
 
 @Controller('api/books')
 export class BooksController {
   constructor(private readonly booksService: BooksService) {}
 
+  @Get('search')
+  search(@Query() searchBooksQueryDto: SearchBooksQueryDto) {
+    return 'This action returns SEARCH';
+  }
+
   @Get()
-  findAll(@Query() queryDto: FindBooksQueryDto) {
-    return this.booksService.findAll(queryDto);
+  findAll(@Query() findBooksQueryDto: FindBooksQueryDto) {
+    return this.booksService.findAll(findBooksQueryDto);
   }
 
   @Get(':isbn')
