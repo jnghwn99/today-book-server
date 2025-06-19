@@ -4,8 +4,8 @@ import { BooksController } from './books.controller';
 import { HttpModule } from '@nestjs/axios';
 
 @Module({
-  imports: [HttpModule],
-  controllers: [BooksController],
-  providers: [BooksService],
+	imports: [HttpModule],
+	controllers: [BooksController],
+	providers: [BooksService],
 })
 export class BooksModule {}
