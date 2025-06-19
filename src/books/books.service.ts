@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { FindBooksQueryDto } from './dto/findAll-book.dto';
 import { SearchBooksQueryDto } from './dto/search-book.dto';
@@ -27,17 +27,29 @@ export class BooksService {
     // console.log(`[BooksService] Requesting URL: ${fullUrl}`); // 3. 최종 요청 URL 확인
     const response = await this.httpService.axiosRef.get(fullUrl);
     // console.log(response.data);
-    return response.data.item;
+    return response.data;
   }
 
   async findAll(findBookQueryDto: FindBooksQueryDto) {
     const { page, limit, type: queryType, categoryId } = findBookQueryDto;
+    const queryTypeMap: Record<string, string> = {
+      today: 'ItemEditorChoice',
+      new: 'ItemNewSpecial',
+      best: 'Bestseller',
+    };
+    const mappedQueryType = queryTypeMap[queryType];
+    if (!mappedQueryType) {
+      console.log(mappedQueryType);
+      throw new BadRequestException('Invalid query type');
+    }
+
     const TTBKey = process.env.API_TTB_KEY;
     const baseUrl = `http://www.aladin.co.kr/ttb/api/ItemList.aspx`;
-    // const queryParams = `?TTBKey=${TTBKey}&QueryType=Bestseller&MaxResults=20&start=1&SearchTarget=Book&Output=js&Version=20131101`;
+    const queryParams = `?TTBKey=${TTBKey}&QueryType=Bestseller&MaxResults=20&start=1&SearchTarget=Book&Output=js&Version=20131101`;
+
     const params = new URLSearchParams({
       TTBKey: TTBKey ?? '',
-      QueryType: queryType || 'Bestseller',
+      QueryType: mappedQueryType,
       SearchTarget: 'Book',
       Start: page ? String((page - 1) * (limit || 20) + 1) : '1',
       MaxResults: limit ? String(limit) : '20',
@@ -46,10 +58,10 @@ export class BooksService {
       Version: '20131101',
     });
     const fullUrl = `${baseUrl}?${params.toString()}`;
-    // console.log(`[BooksService] Requesting URL: ${fullUrl}`); // 3. 최종 요청 URL 확인
+    console.log(`[BooksService] Requesting URL: ${fullUrl}`); // 3. 최종 요청 URL 확인
     const response = await this.httpService.axiosRef.get(fullUrl);
     console.log(response.data);
-    return response.data.item;
+    return response.data;
   }
 
   async findOne(isbn: string) {
@@ -59,6 +71,7 @@ export class BooksService {
       TTBKey: TTBKey ?? '',
       ItemId: isbn,
       ItemIdType: 'ISBN13',
+
       output: 'js',
       Version: '20131101',
     });

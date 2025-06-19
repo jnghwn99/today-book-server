@@ -3,7 +3,7 @@ import { IsInt, IsOptional, IsString, Min } from 'class-validator';
 
 export class FindBooksQueryDto {
   @IsString()
-  readonly type: string = 'Bestseller';
+  readonly type: string = '';
 
   @IsOptional()
   @Type(() => Number)
