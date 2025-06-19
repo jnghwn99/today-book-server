@@ -18,7 +18,7 @@ export class BooksController {
 
   @Get('search')
   search(@Query() searchBooksQueryDto: SearchBooksQueryDto) {
-    return 'This action returns SEARCH';
+    return this.booksService.search(searchBooksQueryDto);
   }
 
   @Get()

@@ -1,13 +1,13 @@
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { IsInt, IsOptional, IsString, Min } from 'class-validator';
 
 export class SearchBooksQueryDto {
   @IsString()
-  readonly query: string;
+  readonly keyword: string;
 
   @IsOptional()
   @IsString()
-  readonly queryType: string = 'Keyword';
+  readonly keywordType: string = 'Keyword';
 
   @IsOptional()
   @Type(() => Number)

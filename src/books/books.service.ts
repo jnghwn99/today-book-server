@@ -9,26 +9,31 @@ export class BooksService {
   constructor(private readonly httpService: HttpService) {}
 
   async search(searchBookQueryDto: SearchBooksQueryDto) {
-    const { query, queryType, page, limit, sort, categoryId } =
-      searchBookQueryDto;
-    const TTBKey = process.env.API_TTB_KEY;
-    const baseUrl = `http://www.aladin.co.kr/ttb/api/ItemSearch.aspx`;
-    const params = new URLSearchParams({
-      TTBKey: TTBKey ?? '',
-      Query: query,
-      QueryType: queryType || 'Keyword',
-      Start: page ? String((page - 1) * (limit || 20) + 1) : '1',
-      MaxResults: limit ? String(limit) : '20',
-      Sort: sort || 'accuracy',
-      CategoryId: categoryId ? String(categoryId) : '0',
-      Output: 'js',
-      Version: '20131101',
-    });
-    const fullUrl = `${baseUrl}?${params.toString()}`;
-    // console.log(`[BooksService] Requesting URL: ${fullUrl}`); // 3. 최종 요청 URL 확인
-    const response = await this.httpService.axiosRef.get(fullUrl);
-    // console.log(response.data);
-    return response.data;
+    try {
+      const { keyword, keywordType, page, limit, sort, categoryId } =
+        searchBookQueryDto;
+      const TTBKey = process.env.API_TTB_KEY;
+      const baseUrl = `http://www.aladin.co.kr/ttb/api/ItemSearch.aspx`;
+      const params = new URLSearchParams({
+        TTBKey: TTBKey ?? '',
+        Query: keyword,
+        QueryType: keywordType || 'Keyword',
+        Start: page ? String((page - 1) * (limit || 20) + 1) : '1',
+        MaxResults: limit ? String(limit) : '20',
+        Sort: sort || 'accuracy',
+        CategoryId: categoryId ? String(categoryId) : '0',
+        Output: 'js',
+        Version: '20131101',
+      });
+      const fullUrl = `${baseUrl}?${params.toString()}`;
+      // console.log(`[BooksService] Requesting URL: ${fullUrl}`); // 3. 최종 요청 URL 확인
+      const response = await this.httpService.axiosRef.get(fullUrl);
+      // console.log(response.data);
+      return response.data as AladinBookResponse;
+    } catch (error) {
+      console.error(error);
+      throw new BadRequestException('Failed to fetch book details');
+    }
   }
 
   async findAll(findBookQueryDto: FindBooksQueryDto) {
@@ -60,9 +65,9 @@ export class BooksService {
         Version: '20131101',
       });
       const fullUrl = `${baseUrl}?${params.toString()}`;
-      console.log(`[BooksService] Requesting URL: ${fullUrl}`); // 3. 최종 요청 URL 확인
+      // console.log(`[BooksService] Requesting URL: ${fullUrl}`); // 3. 최종 요청 URL 확인
       const response = await this.httpService.axiosRef.get(fullUrl);
-      console.log(response.data);
+      // console.log(response.data);
       return response.data as AladinBookResponse;
     } catch (error) {
       console.error(error);
