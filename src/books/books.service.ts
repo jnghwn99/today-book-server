@@ -2,6 +2,7 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { FindBooksQueryDto } from './dto/findAll-book.dto';
 import { SearchBooksQueryDto } from './dto/search-book.dto';
+import { AladinBookResponse } from './types/aladin-api.type';
 
 @Injectable()
 export class BooksService {
@@ -65,32 +66,24 @@ export class BooksService {
   }
 
   async findOne(isbn: string) {
-    const TTBKey = process.env.API_TTB_KEY;
-    const baseUrl = `http://www.aladin.co.kr/ttb/api/ItemLookUp.aspx`;
-    const params = new URLSearchParams({
-      TTBKey: TTBKey ?? '',
-      ItemId: isbn,
-      ItemIdType: 'ISBN13',
-
-      output: 'js',
-      Version: '20131101',
-    });
-    const fullUrl = `${baseUrl}?${params.toString()}`;
-    // console.log(`[BooksService] Requesting URL: ${fullUrl}`); // 3. 최종 요청 URL 확인
-    const response = await this.httpService.axiosRef.get(fullUrl);
-    // console.log(response.data);
-    return response.data.item[0];
+    try {
+      const TTBKey = process.env.API_TTB_KEY;
+      const baseUrl = `http://www.aladin.co.kr/ttb/api/ItemLookUp.aspx`;
+      const params = new URLSearchParams({
+        TTBKey: TTBKey ?? '',
+        ItemId: isbn,
+        ItemIdType: 'ISBN13',
+        output: 'js',
+        Version: '20131101',
+      });
+      const fullUrl = `${baseUrl}?${params.toString()}`;
+      // console.log(`[BooksService] Requesting URL: ${fullUrl}`); // 3. 최종 요청 URL 확인
+      const response = await this.httpService.axiosRef.get(fullUrl);
+      // console.log(response.data);
+      return response.data as AladinBookResponse;
+    } catch (error) {
+      console.error(error);
+      throw new BadRequestException('Failed to fetch book details');
+    }
   }
-
-  // create(createBookDto: CreateBookDto) {
-  //   return 'This action adds a new book';
-  // }
-
-  // update(id: number, updateBookDto: UpdateBookDto) {
-  //   return `This action updates a #${id} book`;
-  // }
-
-  // remove(id: number) {
-  //   return `This action removes a #${id} book`;
-  // }
 }
