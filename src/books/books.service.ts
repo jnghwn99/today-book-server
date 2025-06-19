@@ -32,37 +32,42 @@ export class BooksService {
   }
 
   async findAll(findBookQueryDto: FindBooksQueryDto) {
-    const { page, limit, type: queryType, categoryId } = findBookQueryDto;
-    const queryTypeMap: Record<string, string> = {
-      today: 'ItemEditorChoice',
-      new: 'ItemNewSpecial',
-      best: 'Bestseller',
-    };
-    const mappedQueryType = queryTypeMap[queryType];
-    if (!mappedQueryType) {
-      console.log(mappedQueryType);
-      throw new BadRequestException('Invalid query type');
+    try {
+      const { page, limit, type: queryType, categoryId } = findBookQueryDto;
+      const queryTypeMap: Record<string, string> = {
+        today: 'ItemEditorChoice',
+        new: 'ItemNewSpecial',
+        best: 'Bestseller',
+      };
+      const mappedQueryType = queryTypeMap[queryType];
+      if (!mappedQueryType) {
+        console.log(mappedQueryType);
+        throw new BadRequestException('Invalid query type');
+      }
+
+      const TTBKey = process.env.API_TTB_KEY;
+      const baseUrl = `http://www.aladin.co.kr/ttb/api/ItemList.aspx`;
+      const queryParams = `?TTBKey=${TTBKey}&QueryType=Bestseller&MaxResults=20&start=1&SearchTarget=Book&Output=js&Version=20131101`;
+
+      const params = new URLSearchParams({
+        TTBKey: TTBKey ?? '',
+        QueryType: mappedQueryType,
+        SearchTarget: 'Book',
+        Start: page ? String((page - 1) * (limit || 20) + 1) : '1',
+        MaxResults: limit ? String(limit) : '20',
+        CategoryId: categoryId ? String(categoryId) : '0',
+        Output: 'js',
+        Version: '20131101',
+      });
+      const fullUrl = `${baseUrl}?${params.toString()}`;
+      console.log(`[BooksService] Requesting URL: ${fullUrl}`); // 3. 최종 요청 URL 확인
+      const response = await this.httpService.axiosRef.get(fullUrl);
+      console.log(response.data);
+      return response.data as AladinBookResponse;
+    } catch (error) {
+      console.error(error);
+      throw new BadRequestException('Failed to fetch book details');
     }
-
-    const TTBKey = process.env.API_TTB_KEY;
-    const baseUrl = `http://www.aladin.co.kr/ttb/api/ItemList.aspx`;
-    const queryParams = `?TTBKey=${TTBKey}&QueryType=Bestseller&MaxResults=20&start=1&SearchTarget=Book&Output=js&Version=20131101`;
-
-    const params = new URLSearchParams({
-      TTBKey: TTBKey ?? '',
-      QueryType: mappedQueryType,
-      SearchTarget: 'Book',
-      Start: page ? String((page - 1) * (limit || 20) + 1) : '1',
-      MaxResults: limit ? String(limit) : '20',
-      CategoryId: categoryId ? String(categoryId) : '0',
-      Output: 'js',
-      Version: '20131101',
-    });
-    const fullUrl = `${baseUrl}?${params.toString()}`;
-    console.log(`[BooksService] Requesting URL: ${fullUrl}`); // 3. 최종 요청 URL 확인
-    const response = await this.httpService.axiosRef.get(fullUrl);
-    console.log(response.data);
-    return response.data;
   }
 
   async findOne(isbn: string) {
