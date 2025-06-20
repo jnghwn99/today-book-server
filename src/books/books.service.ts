@@ -48,8 +48,8 @@ export class BooksService {
     try {
       const { page, limit, type: queryType, categoryId } = findBookQueryDto;
       const queryTypeMap: Record<string, string> = {
-        today: 'ItemEditorChoice',
-        new: 'ItemNewSpecial',
+        today: 'ItemNewSpecial',
+        new: 'ItemNewAll',
         best: 'Bestseller',
       };
       const mappedQueryType = queryTypeMap[queryType];
