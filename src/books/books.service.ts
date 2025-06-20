@@ -10,14 +10,21 @@ export class BooksService {
 
   async search(searchBookQueryDto: SearchBooksQueryDto) {
     try {
-      const { keyword, keywordType, page, limit, sort, categoryId } =
-        searchBookQueryDto;
+      const {
+        keyword: query,
+        keywordType: queryType,
+        page,
+        limit,
+        sort,
+        categoryId,
+      } = searchBookQueryDto;
       const TTBKey = process.env.API_TTB_KEY;
+
       const baseUrl = `http://www.aladin.co.kr/ttb/api/ItemSearch.aspx`;
       const params = new URLSearchParams({
         TTBKey: TTBKey ?? '',
-        Query: keyword,
-        QueryType: keywordType || 'Keyword',
+        Query: query,
+        QueryType: queryType || 'Keyword',
         Start: page ? String((page - 1) * (limit || 20) + 1) : '1',
         MaxResults: limit ? String(limit) : '20',
         Sort: sort || 'accuracy',
@@ -27,6 +34,7 @@ export class BooksService {
       });
       const fullUrl = `${baseUrl}?${params.toString()}`;
       // console.log(`[BooksService] Requesting URL: ${fullUrl}`); // 3. 최종 요청 URL 확인
+
       const response = await this.httpService.axiosRef.get(fullUrl);
       // console.log(response.data);
       return response.data as AladinBookResponse;
@@ -52,8 +60,6 @@ export class BooksService {
 
       const TTBKey = process.env.API_TTB_KEY;
       const baseUrl = `http://www.aladin.co.kr/ttb/api/ItemList.aspx`;
-      const queryParams = `?TTBKey=${TTBKey}&QueryType=Bestseller&MaxResults=20&start=1&SearchTarget=Book&Output=js&Version=20131101`;
-
       const params = new URLSearchParams({
         TTBKey: TTBKey ?? '',
         QueryType: mappedQueryType,
@@ -66,6 +72,7 @@ export class BooksService {
       });
       const fullUrl = `${baseUrl}?${params.toString()}`;
       // console.log(`[BooksService] Requesting URL: ${fullUrl}`); // 3. 최종 요청 URL 확인
+
       const response = await this.httpService.axiosRef.get(fullUrl);
       // console.log(response.data);
       return response.data as AladinBookResponse;
@@ -88,6 +95,7 @@ export class BooksService {
       });
       const fullUrl = `${baseUrl}?${params.toString()}`;
       // console.log(`[BooksService] Requesting URL: ${fullUrl}`); // 3. 최종 요청 URL 확인
+
       const response = await this.httpService.axiosRef.get(fullUrl);
       // console.log(response.data);
       return response.data as AladinBookResponse;
