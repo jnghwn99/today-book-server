@@ -12,7 +12,7 @@ import { BooksService } from './books.service';
 import { FindBooksQueryDto } from './dto/findAll-book.dto';
 import { SearchBooksQueryDto } from './dto/search-book.dto';
 
-@Controller('api/books')
+@Controller('books')
 export class BooksController {
   constructor(private readonly booksService: BooksService) {}
 
