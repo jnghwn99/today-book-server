@@ -40,8 +40,8 @@ export class AuthService {
           },
         },
       );
-
-      return response.data.access_token;
+      console.log(response.data);
+      return response.data;
     } catch (error) {
       console.error(error);
       throw error;
