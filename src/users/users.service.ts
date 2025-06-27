@@ -21,10 +21,11 @@ export class UsersService {
   //   return await this.usersRepository.find();
   // }
 
-  async findByKakaoId(kakaoId: string): Promise<User | null> {
-    const user = await this.usersRepository.findOne({ where: { kakaoId } });
+  async findByEmail(email: string): Promise<User | null> {
+    const user = await this.usersRepository.findOne({ where: { email } });
     return user;
   }
+
   // async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
   //   const user = await this.findOne(id);
   //   Object.assign(user, updateUserDto);

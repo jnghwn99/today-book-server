@@ -1,10 +1,6 @@
 import { IsEmail, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class CreateUserDto {
-  //body.id : long
-  @IsString()
-  kakaoId: string;
-
   //body->kakao_account.email : KakaoAccount:string
   @IsEmail()
   email: string;

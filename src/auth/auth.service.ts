@@ -39,7 +39,7 @@ export class AuthService {
       const kakaoUserInfo = await this.getKakaoUserInfo(
         tokenResponse.access_token,
       );
-      console.log(kakaoUserInfo);
+      // console.log(kakaoUserInfo);
 
       const userData = {
         kakaoId: kakaoUserInfo.id.toString(),
@@ -48,10 +48,17 @@ export class AuthService {
         profileImage:
           kakaoUserInfo.kakao_account.profile?.profile_image_url ?? '',
       };
-      let user = await this.usersService.findByKakaoId(userData.kakaoId);
+      let user = await this.usersService.findByEmail(userData.email);
       if (!user) {
         user = await this.usersService.create(userData);
       }
+
+      const payload = {
+        email: user.email,
+        nickname: user.nickname,
+        profileImage: user.profileImage,
+      };
+      const jwtToken = this.jwtService.sign(payload);
 
       return {
         user: user,

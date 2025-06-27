@@ -9,10 +9,7 @@ import {
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
-  idx: number;
-
-  @Column({ type: 'bigint', unique: true, name: 'kakao_id' })
-  kakaoId: string;
+  id: number;
 
   //body->kakao_account.email : KakaoAccount:string
   @Column({ unique: true, nullable: true })

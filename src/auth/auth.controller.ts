@@ -1,4 +1,4 @@
-import { Controller, Get, Query, Redirect } from '@nestjs/common';
+import { Controller, Get, HttpStatus, Query, Redirect } from '@nestjs/common';
 import { AuthService } from './auth.service';
 
 @Controller(`auth`)
@@ -22,8 +22,21 @@ export class AuthController {
     // console.log(code);
     // console.log(error);
     try {
-      const res = await this.authService.kakaoLoginCallback(code);
-      return res;
+      const result = await this.authService.kakaoLoginCallback(code);
+      return {
+        statusCode: HttpStatus.OK,
+        message: '로그인 성공',
+        data: {
+          user: {
+            email: result.user.email,
+            nickname: result.user.nickname,
+            profileImage: result.user.profileImage,
+          },
+          tokens: {
+            jwtToken: result.token,
+          },
+        },
+      };
     } catch (error) {
       console.log(error);
     }
