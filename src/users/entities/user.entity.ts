@@ -9,26 +9,26 @@ import {
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
-  id: number;
+  idx: number;
 
-  @Column({ unique: true })
+  @Column({ type: 'bigint', unique: true, name: 'kakao_id' })
+  kakaoId: string;
+
+  //body->kakao_account.email : KakaoAccount:string
+  @Column({ unique: true, nullable: true })
   email: string;
 
-  // @Column({ nullable: true })
-  // nickname: string;
+  //body -> kakao_account.profile.nickname : KakaoAccount:Profile:string
+  @Column({ nullable: true })
+  nickname: string;
 
-  // @Column({ nullable: true })
-  // profileImage: string;
+  //body -> kakao_account.profile.profile_image_url : KakaoAccount:Profile:string
+  @Column({ nullable: true, name: 'profile_image' })
+  profileImage: string;
 
-  // @Column()
-  // provider: string;
+  @CreateDateColumn({ name: 'created_at' })
+  createdAt: Date;
 
-  // @Column({ unique: true })
-  // providerId: string;
-
-  // @CreateDateColumn()
-  // createdAt: Date;
-
-  // @UpdateDateColumn()
-  // updatedAt: Date;
+  @UpdateDateColumn({ name: 'updated_at' })
+  updatedAt: Date;
 }

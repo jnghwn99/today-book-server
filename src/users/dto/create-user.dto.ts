@@ -1,13 +1,19 @@
-import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class CreateUserDto {
+  //body.id : long
+  @IsString()
+  kakaoId: string;
+
+  //body->kakao_account.email : KakaoAccount:string
   @IsEmail()
-  @IsNotEmpty()
   email: string;
 
-  // @IsString()
-  // provider?: string;
+  //body -> kakao_account.profile.nickname : KakaoAccount:Profile:string
+  @IsString()
+  nickname: string;
 
-  // @IsString()
-  // providerId?: string;
+  //body -> kakao_account.profile.profile_image_url : KakaoAccount:Profile:string
+  @IsString()
+  profileImage: string;
 }

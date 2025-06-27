@@ -17,34 +17,22 @@ export class UsersService {
     return await this.usersRepository.save(user);
   }
 
-  async findAll(): Promise<User[]> {
-    return await this.usersRepository.find();
-  }
-
-  async findOne(id: number): Promise<User> {
-    const user = await this.usersRepository.findOne({ where: { id } });
-    if (!user) {
-      throw new NotFoundException(`User with ID ${id} not found`);
-    }
-    return user;
-  }
-
-  async findByEmail(email: string): Promise<User | null> {
-    return await this.usersRepository.findOne({ where: { email } });
-  }
-
-  // async findByProviderId(providerId: string): Promise<User | null> {
-  //   return await this.usersRepository.findOne({ where: { providerId } });
+  // async findAll(): Promise<User[]> {
+  //   return await this.usersRepository.find();
   // }
 
-  async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
-    const user = await this.findOne(id);
-    Object.assign(user, updateUserDto);
-    return await this.usersRepository.save(user);
+  async findByKakaoId(kakaoId: string): Promise<User | null> {
+    const user = await this.usersRepository.findOne({ where: { kakaoId } });
+    return user;
   }
+  // async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
+  //   const user = await this.findOne(id);
+  //   Object.assign(user, updateUserDto);
+  //   return await this.usersRepository.save(user);
+  // }
 
-  async remove(id: number): Promise<void> {
-    const user = await this.findOne(id);
-    await this.usersRepository.remove(user);
-  }
+  // async remove(id: number): Promise<void> {
+  //   const user = await this.findOne(id);
+  //   await this.usersRepository.remove(user);
+  // }
 }

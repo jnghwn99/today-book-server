@@ -1,5 +1,6 @@
 import { HttpService } from '@nestjs/axios';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { KakaoTokenResponse, KakaoUserResponse } from './types/kakao.type';
 import { UsersService } from '../users/users.service';
 
@@ -8,6 +9,7 @@ export class AuthService {
   constructor(
     private readonly httpService: HttpService,
     private readonly usersService: UsersService,
+    private readonly jwtService: JwtService,
   ) {}
 
   kakaoLogin() {
@@ -37,23 +39,22 @@ export class AuthService {
       const kakaoUserInfo = await this.getKakaoUserInfo(
         tokenResponse.access_token,
       );
-      const kakaoEmail = kakaoUserInfo.kakao_account.email;
-      if (!kakaoEmail) {
-        throw new HttpException(
-          '카카오 계정에 이메일이 없습니다.',
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-      let user = await this.usersService.findByEmail(kakaoEmail);
+      console.log(kakaoUserInfo);
 
+      const userData = {
+        kakaoId: kakaoUserInfo.id.toString(),
+        email: kakaoUserInfo.kakao_account.email ?? '',
+        nickname: kakaoUserInfo.kakao_account.profile?.nickname ?? '',
+        profileImage:
+          kakaoUserInfo.kakao_account.profile?.profile_image_url ?? '',
+      };
+      let user = await this.usersService.findByKakaoId(userData.kakaoId);
       if (!user) {
-        user = await this.usersService.create({
-          email: kakaoEmail,
-        });
+        user = await this.usersService.create(userData);
       }
 
       return {
-        user: kakaoUserInfo,
+        user: user,
         token: tokenResponse.access_token,
       };
     } catch (error) {
