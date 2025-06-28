@@ -20,7 +20,7 @@ export class User {
   nickname: string;
 
   //body -> kakao_account.profile.profile_image_url : KakaoAccount:Profile:string
-  @Column({ nullable: true, name: 'profile_image' })
+  @Column({ nullable: true, name: 'image' })
   image: string;
 
   @CreateDateColumn({ name: 'created_at' })
