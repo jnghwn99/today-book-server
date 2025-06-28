@@ -1,5 +1,14 @@
-import { Controller, Get, HttpStatus, Query, Redirect } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpStatus,
+  Query,
+  Post,
+  Redirect,
+  Res,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { Response } from 'express';
 
 @Controller(`auth`)
 export class AuthController {
@@ -19,26 +28,43 @@ export class AuthController {
     @Query('error_description') error_description: string,
     @Query('state') state: string,
   ) {
-    // console.log(code);
-    // console.log(error);
     try {
       const result = await this.authService.kakaoLoginCallback(code);
+
+      const token = result.jwtToken;
+
+      console.log('JWT 토큰:', token);
+
+      // POST 응답으로 JWT 토큰 반환
       return {
         statusCode: HttpStatus.OK,
         message: '로그인 성공',
         data: {
-          user: {
-            email: result.user.email,
-            nickname: result.user.nickname,
-            profileImage: result.user.profileImage,
-          },
-          tokens: {
-            jwtToken: result.token,
-          },
+          token,
         },
       };
     } catch (error) {
       console.log(error);
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: '로그인 처리 중 오류가 발생했습니다.',
+      };
     }
+  }
+
+  // 로그아웃 엔드포인트
+  @Post('logout')
+  logout(@Res() res: Response) {
+    res.clearCookie('jwt_token', {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'lax',
+      path: '/',
+    });
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: '로그아웃 성공',
+    };
   }
 }

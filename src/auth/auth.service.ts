@@ -1,8 +1,8 @@
-import { HttpService } from '@nestjs/axios';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { KakaoTokenResponse, KakaoUserResponse } from './types/kakao.type';
+import { KakaoTokenResponse, KakaoIdTokenPayload } from './types/kakao.type';
+import { HttpService } from '@nestjs/axios';
 import { UsersService } from '../users/users.service';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
@@ -36,37 +36,54 @@ export class AuthService {
         redirectUri,
         clientSecret,
       );
-      const kakaoUserInfo = await this.getKakaoUserInfo(
-        tokenResponse.access_token,
-      );
-      // console.log(kakaoUserInfo);
+      // console.log(tokenResponse);
+      const userInfo = this.decodeIdToken(tokenResponse.id_token);
 
       const userData = {
-        kakaoId: kakaoUserInfo.id.toString(),
-        email: kakaoUserInfo.kakao_account.email ?? '',
-        nickname: kakaoUserInfo.kakao_account.profile?.nickname ?? '',
-        profileImage:
-          kakaoUserInfo.kakao_account.profile?.profile_image_url ?? '',
+        email: userInfo.email,
+        nickname: userInfo.nickname,
+        image: userInfo.picture,
       };
+      // console.log(userData);
+
       let user = await this.usersService.findByEmail(userData.email);
       if (!user) {
         user = await this.usersService.create(userData);
       }
 
-      const payload = {
+      // JWT 토큰 생성
+      const jwtPayload = {
         email: user.email,
-        nickname: user.nickname,
-        profileImage: user.profileImage,
       };
-      const jwtToken = this.jwtService.sign(payload);
+
+      const jwtToken = await this.jwtService.signAsync(jwtPayload);
 
       return {
-        user: user,
-        token: tokenResponse.access_token,
+        jwtToken,
       };
     } catch (error) {
-      console.error(error);
-      throw error;
+      console.error('카카오 로그인 처리 중 오류:', error);
+      throw new HttpException(
+        '카카오 로그인 처리 중 오류가 발생했습니다.',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  private decodeIdToken(idToken: string): KakaoIdTokenPayload {
+    try {
+      // JWT 토큰을 디코딩 (검증 없이)
+      const base64Url = idToken.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split('')
+          .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+          .join(''),
+      );
+      return JSON.parse(jsonPayload) as KakaoIdTokenPayload;
+    } catch (error) {
+      throw new HttpException('ID 토큰 디코딩 실패', HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -94,25 +111,5 @@ export class AuthService {
       },
     );
     return response.data;
-  }
-
-  async getKakaoUserInfo(accessToken: string): Promise<KakaoUserResponse> {
-    try {
-      const response = await this.httpService.axiosRef.get<KakaoUserResponse>(
-        'https://kapi.kakao.com/v2/user/me',
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
-          },
-        },
-      );
-      return response.data;
-    } catch (error) {
-      throw new HttpException(
-        '사용자 정보 조회 실패',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
   }
 }

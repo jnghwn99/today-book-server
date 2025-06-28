@@ -11,5 +11,5 @@ export class CreateUserDto {
 
   //body -> kakao_account.profile.profile_image_url : KakaoAccount:Profile:string
   @IsString()
-  profileImage: string;
+  image: string;
 }
