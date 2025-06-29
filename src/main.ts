@@ -1,20 +1,16 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-// import * as fs from 'fs';
-// import * as path from 'path';
+import * as fs from 'fs';
+import * as path from 'path';
 
 async function bootstrap() {
-  // HTTPS 설정 (SSL 인증서 파일이 있을 때 사용)
-  // const httpsOptions = {
-  //   key: fs.readFileSync(path.join(process.cwd(), 'key.pem')),
-  //   cert: fs.readFileSync(path.join(process.cwd(), 'cert.pem')),
-  // };
-  // const app = await NestFactory.create(AppModule, { httpsOptions });
-  
-  // HTTP로 서버 시작 (개발용)
-  const app = await NestFactory.create(AppModule);
-  
+  const httpsOptions = {
+    key: fs.readFileSync(path.join(process.cwd(), 'key.pem')),
+    cert: fs.readFileSync(path.join(process.cwd(), 'cert.pem')),
+  };
+  const app = await NestFactory.create(AppModule, { httpsOptions });
+  // const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('api');
   app.useGlobalPipes(
     new ValidationPipe({
