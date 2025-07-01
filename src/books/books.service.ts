@@ -25,7 +25,7 @@ export class BooksService {
         TTBKey: TTBKey ?? '',
         Query: query,
         QueryType: queryType || 'Keyword',
-        Start: page ? String((page - 1) * (limit || 20) + 1) : '1',
+        Start: page ? String(page) : '1',
         MaxResults: limit ? String(limit) : '20',
         Sort: sort || 'accuracy',
         CategoryId: categoryId ? String(categoryId) : '0',
@@ -33,7 +33,7 @@ export class BooksService {
         Version: '20131101',
       });
       const fullUrl = `${baseUrl}?${params.toString()}`;
-      // console.log(`[BooksService] Requesting URL: ${fullUrl}`); // 3. 최종 요청 URL 확인
+      console.log(`[BooksService] Requesting URL: ${fullUrl}`); // 3. 최종 요청 URL 확인
 
       const response = await this.httpService.axiosRef.get(fullUrl);
       // console.log(response.data);
@@ -64,7 +64,7 @@ export class BooksService {
         TTBKey: TTBKey ?? '',
         QueryType: mappedQueryType,
         SearchTarget: 'Book',
-        Start: page ? String((page - 1) * (limit || 20) + 1) : '1',
+        Start: page ? String(page) : '1',
         MaxResults: limit ? String(limit) : '20',
         CategoryId: categoryId ? String(categoryId) : '0',
         Output: 'js',
