@@ -3,6 +3,9 @@ import { KakaoTokenResponse, KakaoIdTokenPayload } from './types/kakao.type';
 import { HttpService } from '@nestjs/axios';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
+import { Response } from 'express';
+import { Res } from '@nestjs/common';
 
 @Injectable()
 export class AuthService {
@@ -10,6 +13,7 @@ export class AuthService {
     private readonly httpService: HttpService,
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
   ) {}
 
   kakaoLogin() {
@@ -58,9 +62,7 @@ export class AuthService {
 
       const jwtToken = await this.jwtService.signAsync(jwtPayload);
 
-      return {
-        jwtToken,
-      };
+      return { token: jwtToken, url: this.configService.get('CLIENT_URL') };
     } catch (error) {
       console.error('카카오 로그인 처리 중 오류:', error);
       throw new HttpException(
