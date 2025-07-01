@@ -18,7 +18,7 @@ export class BooksService {
         sort,
         categoryId,
       } = searchBookQueryDto;
-      const TTBKey = process.env.API_TTB_KEY;
+      const TTBKey = process.env.ALADIN_TTB_KEY;
 
       const baseUrl = `http://www.aladin.co.kr/ttb/api/ItemSearch.aspx`;
       const params = new URLSearchParams({
@@ -58,7 +58,7 @@ export class BooksService {
         throw new BadRequestException('Invalid query type');
       }
 
-      const TTBKey = process.env.API_TTB_KEY;
+      const TTBKey = process.env.ALADIN_TTB_KEY;
       const baseUrl = `http://www.aladin.co.kr/ttb/api/ItemList.aspx`;
       const params = new URLSearchParams({
         TTBKey: TTBKey ?? '',
@@ -84,7 +84,7 @@ export class BooksService {
 
   async findOne(isbn: string) {
     try {
-      const TTBKey = process.env.API_TTB_KEY;
+      const TTBKey = process.env.ALADIN_TTB_KEY;
       const baseUrl = `http://www.aladin.co.kr/ttb/api/ItemLookUp.aspx`;
       const params = new URLSearchParams({
         TTBKey: TTBKey ?? '',
