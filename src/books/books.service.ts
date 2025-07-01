@@ -18,14 +18,14 @@ export class BooksService {
         sort,
         categoryId,
       } = searchBookQueryDto;
-      const TTBKey = process.env.API_TTB_KEY;
+      const TTBKey = process.env.ALADIN_TTB_KEY;
 
       const baseUrl = `http://www.aladin.co.kr/ttb/api/ItemSearch.aspx`;
       const params = new URLSearchParams({
         TTBKey: TTBKey ?? '',
         Query: query,
         QueryType: queryType || 'Keyword',
-        Start: page ? String((page - 1) * (limit || 20) + 1) : '1',
+        Start: page ? String(page) : '1',
         MaxResults: limit ? String(limit) : '20',
         Sort: sort || 'accuracy',
         CategoryId: categoryId ? String(categoryId) : '0',
@@ -33,7 +33,7 @@ export class BooksService {
         Version: '20131101',
       });
       const fullUrl = `${baseUrl}?${params.toString()}`;
-      // console.log(`[BooksService] Requesting URL: ${fullUrl}`); // 3. 최종 요청 URL 확인
+      console.log(`[BooksService] Requesting URL: ${fullUrl}`); // 3. 최종 요청 URL 확인
 
       const response = await this.httpService.axiosRef.get(fullUrl);
       // console.log(response.data);
@@ -58,13 +58,13 @@ export class BooksService {
         throw new BadRequestException('Invalid query type');
       }
 
-      const TTBKey = process.env.API_TTB_KEY;
+      const TTBKey = process.env.ALADIN_TTB_KEY;
       const baseUrl = `http://www.aladin.co.kr/ttb/api/ItemList.aspx`;
       const params = new URLSearchParams({
         TTBKey: TTBKey ?? '',
         QueryType: mappedQueryType,
         SearchTarget: 'Book',
-        Start: page ? String((page - 1) * (limit || 20) + 1) : '1',
+        Start: page ? String(page) : '1',
         MaxResults: limit ? String(limit) : '20',
         CategoryId: categoryId ? String(categoryId) : '0',
         Output: 'js',
@@ -84,7 +84,7 @@ export class BooksService {
 
   async findOne(isbn: string) {
     try {
-      const TTBKey = process.env.API_TTB_KEY;
+      const TTBKey = process.env.ALADIN_TTB_KEY;
       const baseUrl = `http://www.aladin.co.kr/ttb/api/ItemLookUp.aspx`;
       const params = new URLSearchParams({
         TTBKey: TTBKey ?? '',
