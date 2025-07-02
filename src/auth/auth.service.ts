@@ -22,11 +22,12 @@ export class AuthService {
   }
 
   async kakaoLoginCallback(code: string) {
-    const clientId = process.env.KAKAO_ID;
-    const redirectUri = process.env.KAKAO_REDIRECT_URI;
-    const clientSecret = process.env.KAKAO_SECRET;
+    const kakaoId = this.configService.get<string>('KAKAO_ID');
+    const kakaoRedirectUrl =
+      this.configService.get<string>('KAKAO_REDIRECT_URI');
+    const kakaoSecret = this.configService.get<string>('KAKAO_SECRET');
 
-    if (!clientId || !redirectUri || !clientSecret) {
+    if (!kakaoId || !kakaoRedirectUrl || !kakaoSecret) {
       throw new HttpException(
         '카카오 설정이 누락되었습니다.',
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -36,9 +37,9 @@ export class AuthService {
     try {
       const tokenResponse = await this.getKakaoToken(
         code,
-        clientId,
-        redirectUri,
-        clientSecret,
+        kakaoId,
+        kakaoRedirectUrl,
+        kakaoSecret,
       );
       // console.log(tokenResponse);
       const userInfo = this.decodeIdToken(tokenResponse.id_token);
@@ -62,7 +63,10 @@ export class AuthService {
 
       const jwtToken = await this.jwtService.signAsync(jwtPayload);
 
-      return { token: jwtToken, url: this.configService.get('CLIENT_URL') };
+      return {
+        token: jwtToken,
+        url: this.configService.get<string>('CLIENT_URL'),
+      };
     } catch (error) {
       console.error('카카오 로그인 처리 중 오류:', error);
       throw new HttpException(
