@@ -22,6 +22,7 @@ export class AuthController {
   }
 
   @Get('kakao/callback')
+  @Redirect()
   async kakaoLoginCallback(@Query('code') code: string, @Res() res: Response) {
     try {
       const result = await this.authService.kakaoLoginCallback(code);
@@ -39,7 +40,7 @@ export class AuthController {
 
       console.log(token);
       // CLIENT_URL로 리다이렉트
-      return res.redirect(url);
+      return { url: url };
     } catch (error) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
