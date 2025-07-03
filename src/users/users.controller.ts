@@ -37,4 +37,13 @@ export class UsersController {
 
     return this.usersService.getCurrentUser(token);
   }
+
+  @Patch()
+  update(@Req() req: RequestWithCookies, @Body() updateUserDto: UpdateUserDto) {
+    const token = req.cookies?.jwt_token;
+    if (!token) {
+      throw new UnauthorizedException('JWT 토큰이 없습니다.');
+    }
+    return this.usersService.update(token, updateUserDto);
+  }
 }

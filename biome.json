@@ -149,6 +149,12 @@
   ],
   "assist": {
     "enabled": true,
-    "actions": { "source": { "organizeImports": "on" } }
+    "actions": {
+      "source": {
+        "organizeImports": {
+          "options": { "groups": ["@nestjs/*", "@nestjs/**", "src/**", "*"] }
+        }
+      }
+    }
   }
 }

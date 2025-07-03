@@ -35,6 +35,7 @@ export class UsersService {
     return user;
   }
 
+  //read
   async getCurrentUser(token: string): Promise<User> {
     try {
       const payload = await this.authService.verifyJwt(token);
@@ -56,5 +57,22 @@ export class UsersService {
     } catch (error) {
       throw new UnauthorizedException(error.message);
     }
+  }
+
+  async update(token: string, updateUserDto: UpdateUserDto) {
+    const payload = await this.authService.verifyJwt(token);
+    const jwtPayload = Object.assign(new JwtPayload(), payload);
+    const errors = await validate(jwtPayload);
+
+    if (errors.length > 0) {
+      throw new UnauthorizedException('유효하지 않은 JWT 토큰입니다.');
+    }
+    const user = await this.usersRepository.findOne({
+      where: { email: jwtPayload.email },
+    });
+    if (!user) {
+      throw new NotFoundException('사용자를 찾을 수 없습니다.');
+    }
+    return await this.usersRepository.save({ ...user, ...updateUserDto });
   }
 }
