@@ -28,13 +28,13 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
-  // @Get('me')
-  // getCurrentUser(@Req() req: RequestWithCookies) {
-  //   const token = req.cookies?.jwt_token;
-  //   if (!token) {
-  //     throw new UnauthorizedException('JWT 토큰이 없습니다.');
-  //   }
+  @Get('me')
+  getCurrentUser(@Req() req: RequestWithCookies) {
+    const token = req.cookies?.jwt_token;
+    if (!token) {
+      throw new UnauthorizedException('JWT 토큰이 없습니다.');
+    }
 
-  //   return this.usersService.getCurrentUser(token);
-  // }
+    return this.usersService.getCurrentUser(token);
+  }
 }

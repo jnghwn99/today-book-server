@@ -3,10 +3,8 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { validate } from 'class-validator';
 
-interface JwtPayload {
-  email: string;
-}
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
@@ -14,6 +12,8 @@ import { ConfigService } from '@nestjs/config';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
+import { JwtPayload } from 'src/auth/types/jwt.type';
+import { AuthService } from 'src/auth/auth.service';
 
 @Injectable()
 export class UsersService {
@@ -22,6 +22,7 @@ export class UsersService {
     private readonly usersRepository: Repository<User>,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    private readonly authService: AuthService,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
@@ -29,45 +30,31 @@ export class UsersService {
     return await this.usersRepository.save(user);
   }
 
-  // async findAll(): Promise<User[]> {
-  //   return await this.usersRepository.find();
-  // }
-
   async findByEmail(email: string): Promise<User | null> {
     const user = await this.usersRepository.findOne({ where: { email } });
     return user;
   }
 
-  // async getCurrentUser(token: string): Promise<User> {
-  //   try {
-  //     const payload = this.jwtService.verify(token, {
-  //       secret: this.configService.get<string>('JWT_SECRET'),
-  //     });
+  async getCurrentUser(token: string): Promise<User> {
+    try {
+      const payload = await this.authService.verifyJwt(token);
 
-  //     if (
-  //       typeof payload !== 'object' ||
-  //       payload === null ||
-  //       typeof payload.email !== 'string'
-  //     ) {
-  //       throw new UnauthorizedException('유효하지 않은 JWT 토큰입니다.');
-  //     }
+      // JwtPayload 클래스로 검증
+      const jwtPayload = Object.assign(new JwtPayload(), payload);
+      const errors = await validate(jwtPayload);
 
-  //     const email = payload.email;
+      if (errors.length > 0) {
+        throw new UnauthorizedException('유효하지 않은 JWT 토큰입니다.');
+      }
 
-  //     const user = await this.findByEmail(email);
-  //     if (!user) {
-  //       throw new NotFoundException('사용자를 찾을 수 없습니다.');
-  //     }
+      const user = await this.findByEmail(jwtPayload.email);
+      if (!user) {
+        throw new NotFoundException('사용자를 찾을 수 없습니다.');
+      }
 
-  //     return user;
-  //   } catch (error) {
-  //     if (
-  //       error instanceof UnauthorizedException ||
-  //       error instanceof NotFoundException
-  //     ) {
-  //       throw error;
-  //     }
-  //     throw new UnauthorizedException('JWT 토큰 검증에 실패했습니다.');
-  //   }
-  // }
+      return user;
+    } catch (error) {
+      throw new UnauthorizedException(error.message);
+    }
+  }
 }
