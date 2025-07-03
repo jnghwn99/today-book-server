@@ -33,13 +33,13 @@ export class BooksService {
         Version: '20131101',
       });
       const fullUrl = `${baseUrl}?${params.toString()}`;
-      console.log(`[BooksService] Requesting URL: ${fullUrl}`); // 3. 최종 요청 URL 확인
+      // console.log(`[BooksService] Requesting URL: ${fullUrl}`); // 3. 최종 요청 URL 확인
 
       const response = await this.httpService.axiosRef.get(fullUrl);
       // console.log(response.data);
       return response.data as AladinBookResponse;
     } catch (error) {
-      console.error(error);
+      // console.error(error);
       throw new BadRequestException('Failed to fetch book details');
     }
   }
@@ -77,7 +77,7 @@ export class BooksService {
       // console.log(response.data);
       return response.data as AladinBookResponse;
     } catch (error) {
-      console.error(error);
+      // console.error(error);
       throw new BadRequestException('Failed to fetch book details');
     }
   }
@@ -100,7 +100,7 @@ export class BooksService {
       // console.log(response.data);
       return response.data as AladinBookResponse;
     } catch (error) {
-      console.error(error);
+      // console.error(error);
       throw new BadRequestException('Failed to fetch book details');
     }
   }

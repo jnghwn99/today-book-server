@@ -1,3 +1,11 @@
+export interface KakaoTokenRequest {
+  grant_type: string;
+  code: string;
+  client_id: string;
+  redirect_uri: string;
+  client_secret: string;
+}
+
 export interface KakaoTokenResponse {
   token_type: string;
   access_token: string;

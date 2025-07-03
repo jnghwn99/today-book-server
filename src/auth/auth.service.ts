@@ -1,11 +1,16 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { KakaoTokenResponse, KakaoIdTokenPayload } from './types/kakao.type';
+import {
+  KakaoTokenResponse,
+  KakaoIdTokenPayload,
+  KakaoTokenRequest,
+} from './types/kakao.type';
 import { HttpService } from '@nestjs/axios';
-import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
-import { Res } from '@nestjs/common';
+
+import { UsersService } from '../users/users.service';
+import { User } from '../users/entities/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -21,52 +26,55 @@ export class AuthService {
     return kakaoAuthUrl;
   }
 
-  async kakaoLoginCallback(code: string) {
-    const kakaoId = this.configService.get<string>('KAKAO_ID');
-    const kakaoRedirectUrl =
-      this.configService.get<string>('KAKAO_REDIRECT_URI');
-    const kakaoSecret = this.configService.get<string>('KAKAO_SECRET');
-
-    if (!kakaoId || !kakaoRedirectUrl || !kakaoSecret) {
-      throw new HttpException(
-        '카카오 설정이 누락되었습니다.',
-        HttpStatus.INTERNAL_SERVER_ERROR,
+  async getKakaoToken(code: string) {
+    const params: KakaoTokenRequest = {
+      grant_type: 'authorization_code',
+      client_id: this.configService.get<string>('KAKAO_ID')!,
+      redirect_uri: this.configService.get<string>('KAKAO_REDIRECT_URI')!,
+      code: code,
+      client_secret: this.configService.get<string>('KAKAO_SECRET')!,
+    };
+    const kakaoTokenResponse =
+      await this.httpService.axiosRef.post<KakaoTokenResponse>(
+        'https://kauth.kakao.com/oauth/token',
+        params,
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
+          },
+        },
       );
-    }
+    return kakaoTokenResponse.data;
+  }
 
+  async kakaoLoginCallback(code: string, res: Response) {
     try {
-      const tokenResponse = await this.getKakaoToken(
-        code,
-        kakaoId,
-        kakaoRedirectUrl,
-        kakaoSecret,
-      );
-      // console.log(tokenResponse);
-      const userInfo = this.decodeIdToken(tokenResponse.id_token);
+      // 1. 카카오 토큰 발급
+      const kakaoTokenResponse = await this.getKakaoToken(code);
+
+      // 2. 카카오 유저 정보 조회
+      const userInfo = this.decodeKakaoIdToken(kakaoTokenResponse.id_token);
 
       const userData = {
         email: userInfo.email,
         nickname: userInfo.nickname,
         image: userInfo.picture,
       };
-      // console.log(userData);
 
       let user = await this.usersService.findByEmail(userData.email);
       if (!user) {
         user = await this.usersService.create(userData);
       }
+      const jwtToken = await this.setJwt(user);
 
-      // JWT 토큰 생성
-      const jwtPayload = {
-        email: user.email,
-      };
-
-      const jwtToken = await this.jwtService.signAsync(jwtPayload);
-
-      return {
-        token: jwtToken,
-        url: this.configService.get<string>('CLIENT_URL'),
-      };
+      res.cookie('jwt_token', jwtToken, {
+        httpOnly: true,
+        secure: false, // 배포 시 true 권장
+        sameSite: 'lax',
+        path: '/',
+        maxAge: 24 * 60 * 60 * 1000,
+      });
+      return this.configService.get<string>('CLIENT_URL');
     } catch (error) {
       console.error('카카오 로그인 처리 중 오류:', error);
       throw new HttpException(
@@ -76,46 +84,28 @@ export class AuthService {
     }
   }
 
-  private decodeIdToken(idToken: string): KakaoIdTokenPayload {
+  private decodeKakaoIdToken(idToken: string): KakaoIdTokenPayload {
     try {
-      // JWT 토큰을 디코딩 (검증 없이)
       const base64Url = idToken.split('.')[1];
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      const jsonPayload = decodeURIComponent(
-        atob(base64)
-          .split('')
-          .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-          .join(''),
-      );
-      return JSON.parse(jsonPayload) as KakaoIdTokenPayload;
+      const decodedPayloadBuffer = Buffer.from(base64Url, 'base64url');
+
+      const decodedPayload = JSON.parse(
+        decodedPayloadBuffer.toString('utf-8'),
+      ) as KakaoIdTokenPayload;
+
+      return decodedPayload;
     } catch (error) {
       throw new HttpException('ID 토큰 디코딩 실패', HttpStatus.BAD_REQUEST);
     }
   }
 
-  async getKakaoToken(
-    code: string,
-    clientId: string,
-    redirectUri: string,
-    clientSecret: string,
-  ): Promise<KakaoTokenResponse> {
-    const params = new URLSearchParams({
-      grant_type: 'authorization_code',
-      client_id: clientId,
-      redirect_uri: redirectUri,
-      code: code,
-      client_secret: clientSecret,
-    }).toString();
-
-    const response = await this.httpService.axiosRef.post<KakaoTokenResponse>(
-      'https://kauth.kakao.com/oauth/token',
-      params,
-      {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
-        },
-      },
-    );
-    return response.data;
+  async setJwt(user: User) {
+    const payload = {
+      email: user.email,
+    };
+    return await this.jwtService.signAsync(payload, {
+      secret: this.configService.get<string>('JWT_SECRET'),
+      expiresIn: this.configService.get<string>('JWT_EXPIRES_IN'),
+    });
   }
 }
