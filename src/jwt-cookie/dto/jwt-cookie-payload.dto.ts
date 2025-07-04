@@ -1,6 +1,6 @@
 import { IsEmail, IsNotEmpty, IsNumber } from 'class-validator';
 
-export class JwtPayload {
+export class JwtCookiePayload {
   @IsNumber()
   @IsNotEmpty()
   id: number;

@@ -10,15 +10,15 @@ import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
-import { JwtPayload } from '../jwt/jwt.type';
-import { JwtService } from '../jwt/jwt.service';
+import { JwtCookiePayload } from '../jwt-cookie/dto/jwt-cookie-payload.dto';
+import { JwtCookieService } from '../jwt-cookie/jwt-cookie.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
-    private readonly jwtService: JwtService,
+    private readonly jwtCookieService: JwtCookieService,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
@@ -39,10 +39,10 @@ export class UsersService {
   //read
   async getCurrentUser(token: string): Promise<User> {
     try {
-      const payload = await this.jwtService.verifyJwt(token);
+      const payload = await this.jwtCookieService.verifyJwt(token);
 
       // JwtPayload 클래스로 검증
-      const jwtPayload = Object.assign(new JwtPayload(), payload);
+      const jwtPayload = Object.assign(new JwtCookiePayload(), payload);
       const errors = await validate(jwtPayload);
 
       if (errors.length > 0) {
@@ -61,8 +61,8 @@ export class UsersService {
   }
 
   async update(token: string, updateUserDto: UpdateUserDto) {
-    const payload = await this.jwtService.verifyJwt(token);
-    const jwtPayload = Object.assign(new JwtPayload(), payload);
+    const payload = await this.jwtCookieService.verifyJwt(token);
+    const jwtPayload = Object.assign(new JwtCookiePayload(), payload);
     const errors = await validate(jwtPayload);
 
     if (errors.length > 0) {

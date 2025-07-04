@@ -13,7 +13,8 @@
     "bracketSameLine": false,
     "bracketSpacing": true,
     "expand": "auto",
-    "useEditorconfig": true
+    "useEditorconfig": true,
+    "includes": ["src/**/*.ts", "test/**/*.ts", "!dist/**", "!node_modules/**"]
   },
   "linter": {
     "enabled": true,
@@ -93,7 +94,7 @@
         "useNamespaceKeyword": "error"
       }
     },
-    "includes": ["**", "!eslint.config.mjs"]
+    "includes": ["src/**/*.ts", "test/**/*.ts"]
   },
   "javascript": {
     "formatter": {

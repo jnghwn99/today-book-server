@@ -1,11 +1,12 @@
 import { Module } from '@nestjs/common';
-import { JwtModule as NestJwtModule } from '@nestjs/jwt';
+import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { JwtService } from './jwt.service';
+import { JwtCookieService } from './jwt-cookie.service';
+import { JwtCookieController } from './jwt-cookie.controller';
 
 @Module({
   imports: [
-    NestJwtModule.registerAsync({
+    JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET'),
@@ -14,7 +15,8 @@ import { JwtService } from './jwt.service';
       inject: [ConfigService],
     }),
   ],
-  providers: [JwtService],
-  exports: [JwtService],
+  controllers: [JwtCookieController],
+  providers: [JwtCookieService],
+  exports: [JwtCookieService],
 })
-export class JwtModule {}
+export class JwtCookieModule {}

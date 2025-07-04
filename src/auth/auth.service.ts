@@ -1,23 +1,22 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import {
-  KakaoTokenResponse,
-  KakaoIdTokenPayload,
-  KakaoTokenRequest,
-} from './types/kakao.type';
+  KakaoTokenRequestDto,
+  KakaoTokenResponseDto,
+  KakaoIdTokenPayloadDto,
+} from './dto/index';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
 
 import { UsersService } from '../users/users.service';
-import { User } from '../users/entities/user.entity';
-import { JwtService } from '../jwt/jwt.service';
+import { JwtCookieService } from '../jwt-cookie/jwt-cookie.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly httpService: HttpService,
     private readonly usersService: UsersService,
-    private readonly jwtService: JwtService,
+    private readonly jwtCookieService: JwtCookieService,
     private readonly configService: ConfigService,
   ) {}
 
@@ -27,7 +26,7 @@ export class AuthService {
   }
 
   async getKakaoToken(code: string) {
-    const params: KakaoTokenRequest = {
+    const params: KakaoTokenRequestDto = {
       grant_type: 'authorization_code',
       client_id: this.configService.get<string>('KAKAO_ID')!,
       redirect_uri: this.configService.get<string>('KAKAO_REDIRECT_URI')!,
@@ -35,7 +34,7 @@ export class AuthService {
       client_secret: this.configService.get<string>('KAKAO_SECRET')!,
     };
     const kakaoTokenResponse =
-      await this.httpService.axiosRef.post<KakaoTokenResponse>(
+      await this.httpService.axiosRef.post<KakaoTokenResponseDto>(
         'https://kauth.kakao.com/oauth/token',
         params,
         {
@@ -65,7 +64,7 @@ export class AuthService {
       if (!user) {
         user = await this.usersService.create(userData);
       }
-      const jwtToken = await this.jwtService.signJwt(user);
+      const jwtToken = await this.jwtCookieService.signJwt(user);
 
       res.cookie('jwt_token', jwtToken, {
         httpOnly: true,
@@ -84,14 +83,14 @@ export class AuthService {
     }
   }
 
-  private decodeKakaoIdToken(idToken: string): KakaoIdTokenPayload {
+  private decodeKakaoIdToken(idToken: string): KakaoIdTokenPayloadDto {
     try {
       const base64Url = idToken.split('.')[1];
       const decodedPayloadBuffer = Buffer.from(base64Url, 'base64url');
 
       const decodedPayload = JSON.parse(
         decodedPayloadBuffer.toString('utf-8'),
-      ) as KakaoIdTokenPayload;
+      ) as KakaoIdTokenPayloadDto;
 
       return decodedPayload;
     } catch (error) {
