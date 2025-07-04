@@ -12,9 +12,9 @@ import {
 import { CommentsService } from './comments.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
-import { extractTokenOrThrow } from 'src/common/utils/cookie.util';
+import { extractTokenOrThrow } from '../common/utils/cookie.util';
 import { Request } from 'express';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from '../users/users.service';
 
 @Controller('comments')
 export class CommentsController {
