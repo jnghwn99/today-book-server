@@ -10,7 +10,7 @@ import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
-import { JwtPayload } from 'src/auth/types/jwt.type';
+import { JwtPayload } from 'src/jwt/jwt.type';
 import { JwtService } from 'src/jwt/jwt.service';
 
 @Injectable()
