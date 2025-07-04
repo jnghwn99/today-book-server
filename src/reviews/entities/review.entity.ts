@@ -21,8 +21,8 @@ export class Review {
   @Column({ name: 'user_id' })
   userId: number;
 
-  @Column({ name: 'book_id' })
-  bookId: string;
+  @Column({ name: 'book_isbn13' })
+  bookIsbn13: string;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
@@ -36,6 +36,6 @@ export class Review {
   user: User;
 
   @ManyToOne(() => Book, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'book_id' })
+  @JoinColumn({ name: 'book_isbn13', referencedColumnName: 'isbn13' })
   book: Book;
 }

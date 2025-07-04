@@ -57,7 +57,61 @@
       "created": 1734609600000,
       "url": "{{ _.base_url }}/api/auth/kakao/callback?code={{ _.kakao_code }}",
       "name": "카카오 로그인 콜백",
-      "description": "카카오 OAuth 콜백 처리",
+      "description": "카카오 OAuth 콜백 처리 (JWT 토큰을 쿠키에 설정)",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -1734609599999,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_jwt_cookie_test_sign",
+      "parentId": "fld_jwt_cookie",
+      "modified": 1734609600000,
+      "created": 1734609600000,
+      "url": "{{ _.base_url }}/api/jwt-cookie/test-sign",
+      "name": "테스트용 JWT 토큰 발급",
+      "description": "개발 환경에서 테스트용 JWT 토큰을 발급받습니다",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"id\": 1,\n  \"email\": \"test@example.com\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1734609600000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_jwt_cookie_test_verify",
+      "parentId": "fld_jwt_cookie",
+      "modified": 1734609600000,
+      "created": 1734609600000,
+      "url": "{{ _.base_url }}/api/jwt-cookie/test-verify?token={{ _.jwt_token }}",
+      "name": "JWT 토큰 검증",
+      "description": "JWT 토큰의 유효성을 검증하고 페이로드를 확인합니다",
       "method": "GET",
       "body": {},
       "parameters": [],
@@ -111,7 +165,7 @@
       "created": 1734609600000,
       "url": "{{ _.base_url }}/api/users/me",
       "name": "현재 사용자 정보 조회",
-      "description": "JWT 토큰을 통해 현재 로그인한 사용자 정보 조회",
+      "description": "쿠키의 JWT 토큰을 통해 현재 로그인한 사용자 정보 조회",
       "method": "GET",
       "body": {},
       "parameters": [],
@@ -134,7 +188,7 @@
       "created": 1734609600000,
       "url": "{{ _.base_url }}/api/users",
       "name": "사용자 정보 수정",
-      "description": "현재 사용자 정보 수정",
+      "description": "쿠키의 JWT 토큰을 통해 현재 사용자 정보 수정",
       "method": "PATCH",
       "body": {
         "mimeType": "application/json",
@@ -225,8 +279,8 @@
       "parameters": [
         {
           "name": "type",
-          "value": "bestseller",
-          "description": "도서 타입 (bestseller, new, special)"
+          "value": "best",
+          "description": "도서 타입 (today, new, best)"
         },
         {
           "name": "categoryId",
@@ -286,7 +340,7 @@
       "created": 1734609600000,
       "url": "{{ _.base_url }}/api/reviews/{{ _.isbn }}",
       "name": "리뷰 작성",
-      "description": "특정 도서에 리뷰 작성 (JWT 토큰 필요)",
+      "description": "특정 도서에 리뷰 작성 (쿠키의 JWT 토큰 필요)",
       "method": "POST",
       "body": {
         "mimeType": "application/json",
@@ -398,70 +452,7 @@
       "settingFollowRedirects": "global",
       "_type": "request"
     },
-    {
-      "_id": "req_jwt_test_token",
-      "parentId": "fld_jwt",
-      "modified": 1734609600000,
-      "created": 1734609600000,
-      "url": "{{ _.base_url }}/api/jwt/test-token",
-      "name": "테스트용 JWT 토큰 발급",
-      "description": "개발 환경에서 테스트용 JWT 토큰을 발급받습니다",
-      "method": "POST",
-      "body": {
-        "mimeType": "application/json",
-        "text": "{\n  \"id\": 1,\n  \"email\": \"test@example.com\"\n}"
-      },
-      "parameters": [],
-      "headers": [
-        {
-          "name": "Content-Type",
-          "value": "application/json"
-        }
-      ],
-      "authentication": {},
-      "metaSortKey": -1734609600000,
-      "isPrivate": false,
-      "settingStoreCookies": true,
-      "settingSendCookies": true,
-      "settingDisableRenderRequestBody": false,
-      "settingEncodeUrl": true,
-      "settingRebuildPath": true,
-      "settingFollowRedirects": "global",
-      "_type": "request"
-    },
-    {
-      "_id": "req_jwt_verify",
-      "parentId": "fld_jwt",
-      "modified": 1734609600000,
-      "created": 1734609600000,
-      "url": "{{ _.base_url }}/api/jwt/verify?token={{ _.jwt_token }}",
-      "name": "JWT 토큰 검증",
-      "description": "JWT 토큰의 유효성을 검증하고 페이로드를 확인합니다",
-      "method": "GET",
-      "body": {},
-      "parameters": [],
-      "headers": [],
-      "authentication": {},
-      "metaSortKey": -1734609599999,
-      "isPrivate": false,
-      "settingStoreCookies": true,
-      "settingSendCookies": true,
-      "settingDisableRenderRequestBody": false,
-      "settingEncodeUrl": true,
-      "settingRebuildPath": true,
-      "settingFollowRedirects": "global",
-      "_type": "request"
-    },
-    {
-      "_id": "wrk_today_book_server",
-      "parentId": null,
-      "modified": 1734609600000,
-      "created": 1734609600000,
-      "name": "Today Book Server",
-      "description": "오늘의 책 서버 API 컬렉션",
-      "scope": "collection",
-      "_type": "workspace"
-    },
+   
     {
       "_id": "fld_auth",
       "parentId": "wrk_today_book_server",
@@ -475,6 +466,18 @@
       "_type": "request_group"
     },
     {
+      "_id": "fld_jwt_cookie",
+      "parentId": "wrk_today_book_server",
+      "modified": 1734609600000,
+      "created": 1734609600000,
+      "name": "JWT 쿠키 (JWT Cookie)",
+      "description": "JWT 토큰 테스트 관련 API (개발 환경 전용)",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1734609599999,
+      "_type": "request_group"
+    },
+    {
       "_id": "fld_users",
       "parentId": "wrk_today_book_server",
       "modified": 1734609600000,
@@ -483,7 +486,7 @@
       "description": "사용자 관리 관련 API",
       "environment": {},
       "environmentPropertyOrder": null,
-      "metaSortKey": -1734609599999,
+      "metaSortKey": -1734609599998,
       "_type": "request_group"
     },
     {
@@ -495,7 +498,7 @@
       "description": "도서 검색 및 조회 관련 API",
       "environment": {},
       "environmentPropertyOrder": null,
-      "metaSortKey": -1734609599998,
+      "metaSortKey": -1734609599997,
       "_type": "request_group"
     },
     {
@@ -507,22 +510,33 @@
       "description": "도서 리뷰 관련 API",
       "environment": {},
       "environmentPropertyOrder": null,
-      "metaSortKey": -1734609599997,
-      "_type": "request_group"
-    },
-    {
-      "_id": "fld_jwt",
-      "parentId": "wrk_today_book_server",
-      "modified": 1734609600000,
-      "created": 1734609600000,
-      "name": "JWT",
-      "description": "JWT 토큰 테스트 관련 API (개발 환경 전용)",
-      "environment": {},
-      "environmentPropertyOrder": null,
       "metaSortKey": -1734609599996,
       "_type": "request_group"
     },
     {
+      "_id": "wrk_today_book_server",
+      "parentId": null,
+      "modified": 1734609600000,
+      "created": 1734609600000,
+      "name": "Today Book Server",
+      "description": "오늘의 책 서버 API 컬렉션",
+      "scope": "collection",
+      "environment": {
+        "base_url": "http://localhost:3000",
+        "isbn": "9788983921985",
+        "kakao_code": "your_kakao_auth_code_here",
+        "jwt_token": "your_jwt_token_here"
+      },
+      "environmentPropertyOrder": {
+        "&": [
+          "base_url",
+          "isbn",
+          "kakao_code",
+          "jwt_token"
+        ]
+      },
+      "_type": "workspace"
+    },{
       "_id": "env_development",
       "parentId": "wrk_today_book_server",
       "modified": 1734609600000,
@@ -545,31 +559,6 @@
       "color": "#7d69cb",
       "isPrivate": false,
       "metaSortKey": -1734609600000,
-      "_type": "environment"
-    },
-    {
-      "_id": "env_production",
-      "parentId": "wrk_today_book_server",
-      "modified": 1734609600000,
-      "created": 1734609600000,
-      "name": "Production",
-      "data": {
-        "base_url": "http://localhost:3000",
-        "isbn": "9788983921985",
-        "kakao_code": "your_kakao_auth_code_here",
-        "jwt_token": "your_jwt_token_here"
-      },
-      "dataPropertyOrder": {
-        "&": [
-          "base_url",
-          "isbn",
-          "kakao_code",
-          "jwt_token"
-        ]
-      },
-      "color": "#ff6b6b",
-      "isPrivate": false,
-      "metaSortKey": -1734609599999,
       "_type": "environment"
     }
   ]

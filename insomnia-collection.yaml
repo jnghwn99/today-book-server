@@ -1,0 +1,504 @@
+_type: export
+__export_format: 4
+__export_date: '2024-12-19T10:00:00.000Z'
+__export_source: insomnia.desktop.app:v2023.5.8
+resources:
+  - _id: req_root
+    parentId: wrk_today_book_server
+    modified: 1734609600000
+    created: 1734609600000
+    url: '{{ _.base_url }}/'
+    name: Root
+    description: 서버 상태 확인
+    method: GET
+    body: {}
+    parameters: []
+    headers: []
+    authentication: {}
+    metaSortKey: -1734609600000
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+    settingFollowRedirects: global
+    _type: request
+
+  - _id: req_auth_kakao
+    parentId: fld_auth
+    modified: 1734609600000
+    created: 1734609600000
+    url: '{{ _.base_url }}/api/auth/kakao'
+    name: 카카오 로그인
+    description: 카카오 OAuth 로그인 시작
+    method: GET
+    body: {}
+    parameters: []
+    headers: []
+    authentication: {}
+    metaSortKey: -1734609600000
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+    settingFollowRedirects: global
+    _type: request
+
+  - _id: req_auth_kakao_callback
+    parentId: fld_auth
+    modified: 1734609600000
+    created: 1734609600000
+    url: '{{ _.base_url }}/api/auth/kakao/callback?code={{ _.kakao_code }}'
+    name: 카카오 로그인 콜백
+    description: 카카오 OAuth 콜백 처리 (JWT 토큰을 쿠키에 설정)
+    method: GET
+    body: {}
+    parameters: []
+    headers: []
+    authentication: {}
+    metaSortKey: -1734609599999
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+    settingFollowRedirects: global
+    _type: request
+
+  - _id: req_jwt_cookie_test_sign
+    parentId: fld_jwt_cookie
+    modified: 1734609600000
+    created: 1734609600000
+    url: '{{ _.base_url }}/api/jwt-cookie/test-sign'
+    name: 테스트용 JWT 토큰 발급
+    description: 개발 환경에서 테스트용 JWT 토큰을 발급받습니다
+    method: POST
+    body:
+      mimeType: application/json
+      text: |
+        {
+          "id": 1,
+          "email": "test@example.com"
+        }
+    parameters: []
+    headers:
+      - name: Content-Type
+        value: application/json
+    authentication: {}
+    metaSortKey: -1734609600000
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+    settingFollowRedirects: global
+    _type: request
+
+  - _id: req_jwt_cookie_test_verify
+    parentId: fld_jwt_cookie
+    modified: 1734609600000
+    created: 1734609600000
+    url: '{{ _.base_url }}/api/jwt-cookie/test-verify?token={{ _.jwt_token }}'
+    name: JWT 토큰 검증
+    description: JWT 토큰의 유효성을 검증하고 페이로드를 확인합니다
+    method: GET
+    body: {}
+    parameters: []
+    headers: []
+    authentication: {}
+    metaSortKey: -1734609599999
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+    settingFollowRedirects: global
+    _type: request
+
+  - _id: req_users_create
+    parentId: fld_users
+    modified: 1734609600000
+    created: 1734609600000
+    url: '{{ _.base_url }}/api/users'
+    name: 사용자 생성
+    description: 새 사용자 생성
+    method: POST
+    body:
+      mimeType: application/json
+      text: |
+        {
+          "email": "test@example.com",
+          "nickname": "테스트 사용자",
+          "image": "https://example.com/profile.jpg"
+        }
+    parameters: []
+    headers:
+      - name: Content-Type
+        value: application/json
+    authentication: {}
+    metaSortKey: -1734609600000
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+    settingFollowRedirects: global
+    _type: request
+
+  - _id: req_users_me
+    parentId: fld_users
+    modified: 1734609600000
+    created: 1734609600000
+    url: '{{ _.base_url }}/api/users/me'
+    name: 현재 사용자 정보 조회
+    description: 쿠키의 JWT 토큰을 통해 현재 로그인한 사용자 정보 조회
+    method: GET
+    body: {}
+    parameters: []
+    headers: []
+    authentication: {}
+    metaSortKey: -1734609599999
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+    settingFollowRedirects: global
+    _type: request
+
+  - _id: req_users_update
+    parentId: fld_users
+    modified: 1734609600000
+    created: 1734609600000
+    url: '{{ _.base_url }}/api/users'
+    name: 사용자 정보 수정
+    description: 쿠키의 JWT 토큰을 통해 현재 사용자 정보 수정
+    method: PATCH
+    body:
+      mimeType: application/json
+      text: |
+        {
+          "nickname": "수정된 닉네임"
+        }
+    parameters: []
+    headers:
+      - name: Content-Type
+        value: application/json
+    authentication: {}
+    metaSortKey: -1734609599998
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+    settingFollowRedirects: global
+    _type: request
+
+  - _id: req_books_search
+    parentId: fld_books
+    modified: 1734609600000
+    created: 1734609600000
+    url: '{{ _.base_url }}/api/books/search'
+    name: 도서 검색
+    description: 키워드로 도서 검색
+    method: GET
+    body: {}
+    parameters:
+      - name: keyword
+        value: 해리포터
+        description: 검색할 키워드
+      - name: keywordType
+        value: Keyword
+        description: 키워드 타입 (기본값: Keyword)
+      - name: page
+        value: '1'
+        description: 페이지 번호 (기본값: 1)
+      - name: limit
+        value: '20'
+        description: 페이지당 결과 수 (기본값: 20)
+      - name: sort
+        value: accuracy
+        description: 정렬 방식 (accuracy, sales, date)
+      - name: categoryId
+        value: '0'
+        description: 카테고리 ID (기본값: 0)
+    headers: []
+    authentication: {}
+    metaSortKey: -1734609600000
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+    settingFollowRedirects: global
+    _type: request
+
+  - _id: req_books_findall
+    parentId: fld_books
+    modified: 1734609600000
+    created: 1734609600000
+    url: '{{ _.base_url }}/api/books'
+    name: 도서 목록 조회
+    description: 도서 목록 조회 (베스트셀러, 신간 등)
+    method: GET
+    body: {}
+    parameters:
+      - name: type
+        value: best
+        description: 도서 타입 (today, new, best)
+      - name: categoryId
+        value: '0'
+        description: 카테고리 ID (기본값: 0)
+      - name: page
+        value: '1'
+        description: 페이지 번호 (기본값: 1)
+      - name: limit
+        value: '20'
+        description: 페이지당 결과 수 (기본값: 20)
+    headers: []
+    authentication: {}
+    metaSortKey: -1734609599999
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+    settingFollowRedirects: global
+    _type: request
+
+  - _id: req_books_findone
+    parentId: fld_books
+    modified: 1734609600000
+    created: 1734609600000
+    url: '{{ _.base_url }}/api/books/{{ _.isbn }}'
+    name: 도서 상세 조회
+    description: ISBN으로 특정 도서 상세 정보 조회
+    method: GET
+    body: {}
+    parameters: []
+    headers: []
+    authentication: {}
+    metaSortKey: -1734609599998
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+    settingFollowRedirects: global
+    _type: request
+
+  - _id: req_reviews_create
+    parentId: fld_reviews
+    modified: 1734609600000
+    created: 1734609600000
+    url: '{{ _.base_url }}/api/reviews/{{ _.isbn }}'
+    name: 리뷰 작성
+    description: 특정 도서에 리뷰 작성 (쿠키의 JWT 토큰 필요)
+    method: POST
+    body:
+      mimeType: application/json
+      text: |
+        {
+          "content": "이 책은 정말 재미있어요! 추천합니다."
+        }
+    parameters: []
+    headers:
+      - name: Content-Type
+        value: application/json
+    authentication: {}
+    metaSortKey: -1734609600000
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+    settingFollowRedirects: global
+    _type: request
+
+  - _id: req_reviews_findbyisbn
+    parentId: fld_reviews
+    modified: 1734609600000
+    created: 1734609600000
+    url: '{{ _.base_url }}/api/reviews/{{ _.isbn }}'
+    name: 도서 리뷰 조회
+    description: 특정 도서의 리뷰 목록 조회 (페이지네이션 지원)
+    method: GET
+    body: {}
+    parameters:
+      - name: page
+        value: '1'
+        description: 페이지 번호 (기본값: 1)
+      - name: limit
+        value: '10'
+        description: 페이지당 결과 수 (기본값: 10, 최대: 50)
+    headers: []
+    authentication: {}
+    metaSortKey: -1734609599999
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+    settingFollowRedirects: global
+    _type: request
+
+  - _id: req_reviews_update
+    parentId: fld_reviews
+    modified: 1734609600000
+    created: 1734609600000
+    url: '{{ _.base_url }}/api/reviews/{{ _.isbn }}'
+    name: 리뷰 수정
+    description: 특정 도서의 리뷰 수정
+    method: PATCH
+    body:
+      mimeType: application/json
+      text: |
+        {
+          "content": "수정된 리뷰 내용입니다."
+        }
+    parameters: []
+    headers:
+      - name: Content-Type
+        value: application/json
+    authentication: {}
+    metaSortKey: -1734609599998
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+    settingFollowRedirects: global
+    _type: request
+
+  - _id: req_reviews_delete
+    parentId: fld_reviews
+    modified: 1734609600000
+    created: 1734609600000
+    url: '{{ _.base_url }}/api/reviews/{{ _.isbn }}'
+    name: 리뷰 삭제
+    description: 특정 도서의 리뷰 삭제
+    method: DELETE
+    body: {}
+    parameters: []
+    headers: []
+    authentication: {}
+    metaSortKey: -1734609599997
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+    settingFollowRedirects: global
+    _type: request
+
+  - _id: wrk_today_book_server
+    parentId: null
+    modified: 1734609600000
+    created: 1734609600000
+    name: Today Book Server
+    description: 오늘의 책 서버 API 컬렉션
+    scope: collection
+    environment:
+      base_url: http://localhost:3000
+      isbn: '9788983921985'
+      kakao_code: your_kakao_auth_code_here
+      jwt_token: your_jwt_token_here
+    environmentPropertyOrder:
+      '&':
+        - base_url
+        - isbn
+        - kakao_code
+        - jwt_token
+    _type: workspace
+
+  - _id: fld_auth
+    parentId: wrk_today_book_server
+    modified: 1734609600000
+    created: 1734609600000
+    name: 인증 (Auth)
+    description: 카카오 OAuth 인증 관련 API
+    environment: {}
+    environmentPropertyOrder: null
+    metaSortKey: -1734609600000
+    _type: request_group
+
+  - _id: fld_jwt_cookie
+    parentId: wrk_today_book_server
+    modified: 1734609600000
+    created: 1734609600000
+    name: JWT 쿠키 (JWT Cookie)
+    description: JWT 토큰 테스트 관련 API (개발 환경 전용)
+    environment: {}
+    environmentPropertyOrder: null
+    metaSortKey: -1734609599999
+    _type: request_group
+
+  - _id: fld_users
+    parentId: wrk_today_book_server
+    modified: 1734609600000
+    created: 1734609600000
+    name: 사용자 (Users)
+    description: 사용자 관리 관련 API
+    environment: {}
+    environmentPropertyOrder: null
+    metaSortKey: -1734609599998
+    _type: request_group
+
+  - _id: fld_books
+    parentId: wrk_today_book_server
+    modified: 1734609600000
+    created: 1734609600000
+    name: 도서 (Books)
+    description: 도서 검색 및 조회 관련 API
+    environment: {}
+    environmentPropertyOrder: null
+    metaSortKey: -1734609599997
+    _type: request_group
+
+  - _id: fld_reviews
+    parentId: wrk_today_book_server
+    modified: 1734609600000
+    created: 1734609600000
+    name: 리뷰 (Reviews)
+    description: 도서 리뷰 관련 API
+    environment: {}
+    environmentPropertyOrder: null
+    metaSortKey: -1734609599996
+    _type: request_group
+
+  - _id: env_development
+    parentId: wrk_today_book_server
+    modified: 1734609600000
+    created: 1734609600000
+    name: Development
+    data:
+      base_url: http://localhost:3000
+      isbn: '9788983921985'
+      kakao_code: your_kakao_auth_code_here
+      jwt_token: your_jwt_token_here
+    dataPropertyOrder:
+      '&':
+        - base_url
+        - isbn
+        - kakao_code
+        - jwt_token
+    color: '#7d69cb'
+    isPrivate: false
+    metaSortKey: -1734609600000
+    _type: environment 

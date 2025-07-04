@@ -9,8 +9,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { BooksService } from './books.service';
-import { FindBooksQueryDto } from './dto/findAll-book.dto';
-import { SearchBooksQueryDto } from './dto/search-book.dto';
+import { FindBooksQueryDto, SearchBooksQueryDto } from './dto/index';
 
 @Controller('books')
 export class BooksController {

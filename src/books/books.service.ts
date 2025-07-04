@@ -1,12 +1,24 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
-import { FindBooksQueryDto } from './dto/findAll-book.dto';
-import { SearchBooksQueryDto } from './dto/search-book.dto';
-import { AladinBookResponse } from './types/aladin-api.type';
+import { ConfigService } from '@nestjs/config';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import {
+  FindBooksQueryDto,
+  SearchBooksQueryDto,
+  AladinBookResponse,
+  AladinBookItem,
+} from './dto/index';
+import { Book } from './entities/book.entity';
 
 @Injectable()
 export class BooksService {
-  constructor(private readonly httpService: HttpService) {}
+  constructor(
+    private readonly httpService: HttpService,
+    private readonly configService: ConfigService,
+    @InjectRepository(Book)
+    private bookRepository: Repository<Book>,
+  ) {}
 
   async search(searchBookQueryDto: SearchBooksQueryDto) {
     try {
@@ -18,7 +30,7 @@ export class BooksService {
         sort,
         categoryId,
       } = searchBookQueryDto;
-      const TTBKey = process.env.ALADIN_TTB_KEY;
+      const TTBKey = this.configService.get('ALADIN_TTB_KEY');
 
       const baseUrl = `http://www.aladin.co.kr/ttb/api/ItemSearch.aspx`;
       const params = new URLSearchParams({
@@ -59,7 +71,7 @@ export class BooksService {
         throw new BadRequestException('Invalid query type');
       }
 
-      const TTBKey = process.env.ALADIN_TTB_KEY;
+      const TTBKey = this.configService.get('ALADIN_TTB_KEY');
       const baseUrl = `http://www.aladin.co.kr/ttb/api/ItemList.aspx`;
       const params = new URLSearchParams({
         TTBKey: TTBKey ?? '',
@@ -86,25 +98,80 @@ export class BooksService {
 
   async findOne(isbn: string) {
     try {
-      const TTBKey = process.env.ALADIN_TTB_KEY;
-      const baseUrl = `http://www.aladin.co.kr/ttb/api/ItemLookUp.aspx`;
-      const params = new URLSearchParams({
-        TTBKey: TTBKey ?? '',
-        ItemId: isbn,
-        ItemIdType: 'ISBN13',
-        Cover: 'Big',
-        Output: 'js',
-        Version: '20131101',
-      });
-      const fullUrl = `${baseUrl}?${params.toString()}`;
-      // console.log(`[BooksService] Requesting URL: ${fullUrl}`); // 3. 최종 요청 URL 확인
+      // 먼저 DB에서 책 정보 확인
+      let book = await this.findBookByIsbn(isbn);
 
-      const response = await this.httpService.axiosRef.get(fullUrl);
-      // console.log(response.data);
-      return response.data as AladinBookResponse;
+      if (!book) {
+        // DB에 없으면 알라딘 API에서 가져와서 저장
+        const TTBKey = this.configService.get('ALADIN_TTB_KEY');
+        const baseUrl = `http://www.aladin.co.kr/ttb/api/ItemLookUp.aspx`;
+        const params = new URLSearchParams({
+          TTBKey: TTBKey ?? '',
+          ItemId: isbn,
+          ItemIdType: 'ISBN13',
+          Cover: 'Big',
+          Output: 'js',
+          Version: '20131101',
+        });
+        const fullUrl = `${baseUrl}?${params.toString()}`;
+
+        const response = await this.httpService.axiosRef.get(fullUrl);
+        const aladinResponse = response.data as AladinBookResponse;
+
+        if (aladinResponse.item && aladinResponse.item.length > 0) {
+          // 알라딘에서 받은 책 정보를 DB에 저장
+          book = await this.saveBookFromAladin(aladinResponse.item[0]);
+        }
+      }
+
+      // DB에 저장된 책 정보 반환
+      return book;
     } catch {
-      // console.error(error);
       throw new BadRequestException('Failed to fetch book details');
     }
+  }
+
+  async saveBookFromAladin(aladinBook: AladinBookItem): Promise<Book> {
+    const existingBook = await this.bookRepository.findOne({
+      where: { isbn13: aladinBook.isbn13 },
+    });
+
+    if (existingBook) {
+      return existingBook;
+    }
+
+    const book = this.bookRepository.create({
+      isbn13: aladinBook.isbn13,
+      title: aladinBook.title,
+      link: aladinBook.link,
+      author: aladinBook.author,
+      pubDate: aladinBook.pubDate,
+      description: aladinBook.description,
+      itemId: aladinBook.itemId,
+      priceSales: aladinBook.priceSales,
+      priceStandard: aladinBook.priceStandard,
+      mallType: aladinBook.mallType,
+      stockStatus: aladinBook.stockStatus,
+      mileage: aladinBook.mileage,
+      cover: aladinBook.cover,
+      categoryId: aladinBook.categoryId,
+      categoryName: aladinBook.categoryName,
+      publisher: aladinBook.publisher,
+      salesPoint: aladinBook.salesPoint,
+      adult: aladinBook.adult,
+      fixedPrice: aladinBook.fixedPrice,
+      customerReviewRank: aladinBook.customerReviewRank,
+      subTitle: aladinBook.subInfo?.subTitle,
+      originalTitle: aladinBook.subInfo?.originalTitle,
+      itemPage: aladinBook.subInfo?.itemPage,
+    });
+
+    return this.bookRepository.save(book);
+  }
+
+  async findBookByIsbn(isbn: string): Promise<Book | null> {
+    return await this.bookRepository.findOne({
+      where: { isbn13: isbn },
+    });
   }
 }

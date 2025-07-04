@@ -64,15 +64,12 @@ export class AuthService {
       if (!user) {
         user = await this.usersService.create(userData);
       }
-      const jwtToken = await this.jwtCookieService.signJwt(user);
+      const payload = {
+        id: user.id,
+        email: user.email,
+      };
+      await this.jwtCookieService.setJwtCookie(res, payload);
 
-      res.cookie('jwt_token', jwtToken, {
-        httpOnly: true,
-        secure: false, // 배포 시 true 권장
-        sameSite: 'lax',
-        path: '/',
-        maxAge: 24 * 60 * 60 * 1000,
-      });
       return this.configService.get<string>('CLIENT_URL');
     } catch (error) {
       console.error('카카오 로그인 처리 중 오류:', error);

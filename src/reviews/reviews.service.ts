@@ -20,7 +20,7 @@ export class ReviewsService {
   create(isbn: string, createReviewDto: CreateReviewDto, userId: number) {
     return this.reviewRepository.save({
       content: createReviewDto.content,
-      bookId: isbn,
+      bookIsbn13: isbn,
       userId: userId,
     });
   }
@@ -36,12 +36,12 @@ export class ReviewsService {
 
     // 총 개수 조회
     const totalItems = await this.reviewRepository.count({
-      where: { bookId: isbn },
+      where: { bookIsbn13: isbn },
     });
 
     // 페이지네이션된 데이터 조회
     const reviews = await this.reviewRepository.find({
-      where: { bookId: isbn },
+      where: { bookIsbn13: isbn },
       relations: ['user'],
       order: { createdAt: 'DESC' },
       skip: offset,

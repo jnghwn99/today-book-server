@@ -2,7 +2,7 @@ export class ReviewResponseDto {
   id: number;
   content: string;
   userId: number;
-  bookId: string;
+  bookIsbn13: string;
   createdAt: Date;
   updatedAt: Date;
 
