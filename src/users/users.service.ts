@@ -11,14 +11,14 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { JwtPayload } from 'src/auth/types/jwt.type';
-import { AuthService } from 'src/auth/auth.service';
+import { JwtService } from 'src/jwt/jwt.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
-    private readonly authService: AuthService,
+    private readonly jwtService: JwtService,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
@@ -39,7 +39,7 @@ export class UsersService {
   //read
   async getCurrentUser(token: string): Promise<User> {
     try {
-      const payload = await this.authService.verifyJwt(token);
+      const payload = await this.jwtService.verifyJwt(token);
 
       // JwtPayload 클래스로 검증
       const jwtPayload = Object.assign(new JwtPayload(), payload);
@@ -61,7 +61,7 @@ export class UsersService {
   }
 
   async update(token: string, updateUserDto: UpdateUserDto) {
-    const payload = await this.authService.verifyJwt(token);
+    const payload = await this.jwtService.verifyJwt(token);
     const jwtPayload = Object.assign(new JwtPayload(), payload);
     const errors = await validate(jwtPayload);
 

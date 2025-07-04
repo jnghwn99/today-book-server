@@ -5,12 +5,17 @@ import { ConfigModule } from '@nestjs/config';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { User } from './entities/user.entity';
-import { AuthService } from 'src/auth/auth.service';
+import { JwtModule as CustomJwtModule } from '../jwt/jwt.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User]), JwtModule, ConfigModule],
+  imports: [
+    TypeOrmModule.forFeature([User]),
+    JwtModule,
+    ConfigModule,
+    CustomJwtModule,
+  ],
   controllers: [UsersController],
-  providers: [UsersService, AuthService],
+  providers: [UsersService],
   exports: [UsersService],
 })
 export class UsersModule {}

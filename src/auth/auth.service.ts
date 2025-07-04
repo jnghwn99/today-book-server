@@ -5,13 +5,12 @@ import {
   KakaoTokenRequest,
 } from './types/kakao.type';
 import { HttpService } from '@nestjs/axios';
-import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
 
 import { UsersService } from '../users/users.service';
 import { User } from '../users/entities/user.entity';
-import { JwtPayload } from './types/jwt.type';
+import { JwtService } from '../jwt/jwt.service';
 
 @Injectable()
 export class AuthService {
@@ -66,7 +65,7 @@ export class AuthService {
       if (!user) {
         user = await this.usersService.create(userData);
       }
-      const jwtToken = await this.signJwt(user);
+      const jwtToken = await this.jwtService.signJwt(user);
 
       res.cookie('jwt_token', jwtToken, {
         httpOnly: true,
@@ -98,29 +97,6 @@ export class AuthService {
     } catch (error) {
       console.error('ID 토큰 디코딩 실패:', error);
       throw new HttpException('ID 토큰 디코딩 실패', HttpStatus.BAD_REQUEST);
-    }
-  }
-
-  async signJwt(user: User) {
-    const payload = {
-      id: user.id,
-      email: user.email,
-    };
-    return await this.jwtService.signAsync(payload, {
-      secret: this.configService.get<string>('JWT_SECRET'),
-      expiresIn: this.configService.get<string>('JWT_EXPIRES_IN'),
-    });
-  }
-
-  async verifyJwt(token: string) {
-    try {
-      const payload: JwtPayload = await this.jwtService.verifyAsync(token, {
-        secret: this.configService.get<string>('JWT_SECRET'),
-      });
-      return payload;
-    } catch (error) {
-      console.error('JWT 토큰 검증 실패:', error);
-      throw new HttpException('JWT 토큰 검증 실패', HttpStatus.BAD_REQUEST);
     }
   }
 }
