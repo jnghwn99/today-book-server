@@ -68,9 +68,7 @@ export class UsersService {
     if (errors.length > 0) {
       throw new UnauthorizedException('유효하지 않은 JWT 토큰입니다.');
     }
-    const user = await this.usersRepository.findOne({
-      where: { email: jwtPayload.email },
-    });
+    const user = await this.findById(jwtPayload.id);
     if (!user) {
       throw new NotFoundException('사용자를 찾을 수 없습니다.');
     }

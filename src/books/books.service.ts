@@ -28,6 +28,7 @@ export class BooksService {
         Start: page ? String(page) : '1',
         MaxResults: limit ? String(limit) : '20',
         Sort: sort || 'accuracy',
+        Cover: 'Big',
         CategoryId: categoryId ? String(categoryId) : '0',
         Output: 'js',
         Version: '20131101',
@@ -66,6 +67,7 @@ export class BooksService {
         SearchTarget: 'Book',
         Start: page ? String(page) : '1',
         MaxResults: limit ? String(limit) : '20',
+        Cover: 'Big',
         CategoryId: categoryId ? String(categoryId) : '0',
         Output: 'js',
         Version: '20131101',
@@ -90,7 +92,8 @@ export class BooksService {
         TTBKey: TTBKey ?? '',
         ItemId: isbn,
         ItemIdType: 'ISBN13',
-        output: 'js',
+        Cover: 'Big',
+        Output: 'js',
         Version: '20131101',
       });
       const fullUrl = `${baseUrl}?${params.toString()}`;
