@@ -10,8 +10,8 @@ import {
 import { User } from '../../users/entities/user.entity';
 import { Book } from '../../books/entities/book.entity';
 
-@Entity('comments')
-export class Comment {
+@Entity('reviews')
+export class Review {
   @PrimaryGeneratedColumn()
   id: number;
 

@@ -9,46 +9,46 @@ import {
   Query,
   Req,
 } from '@nestjs/common';
-import { CommentsService } from './comments.service';
-import { CreateCommentDto } from './dto/create-comment.dto';
-import { UpdateCommentDto } from './dto/update-comment.dto';
+import { ReviewsService } from './reviews.service';
+import { CreateReviewDto } from './dto/create-review.dto';
+import { UpdateReviewDto } from './dto/update-review.dto';
 import { extractTokenOrThrow } from '../common/utils/cookie.util';
 import { Request } from 'express';
 import { UsersService } from '../users/users.service';
 
-@Controller('comments')
-export class CommentsController {
+@Controller('reviews')
+export class ReviewsController {
   constructor(
-    private readonly commentsService: CommentsService,
+    private readonly reviewsService: ReviewsService,
     private readonly usersService: UsersService,
   ) {}
 
   @Post(':isbn')
   async create(
     @Param('isbn') isbn: string,
-    @Body() createCommentDto: CreateCommentDto,
+    @Body() createCommentDto: CreateReviewDto,
     @Req() req: Request,
   ) {
     const token = extractTokenOrThrow(req);
     const user = await this.usersService.getCurrentUser(token);
-    return this.commentsService.create(isbn, createCommentDto, user.id);
+    return this.reviewsService.create(isbn, createCommentDto, user.id);
   }
 
   @Get(':isbn')
   findAll(@Param('isbn') isbn: string) {
-    return this.commentsService.findAll(isbn);
+    return this.reviewsService.findAll(isbn);
   }
 
   @Patch(':isbn')
   update(
     @Param('isbn') isbn: string,
-    @Body() updateCommentDto: UpdateCommentDto,
+    @Body() updateCommentDto: UpdateReviewDto,
   ) {
-    return this.commentsService.update(isbn, updateCommentDto);
+    return this.reviewsService.update(isbn, updateCommentDto);
   }
 
   @Delete(':isbn')
   remove(@Param('isbn') isbn: string) {
-    return this.commentsService.remove(isbn);
+    return this.reviewsService.remove(isbn);
   }
 }

@@ -1,6 +1,6 @@
 import { IsString, IsNotEmpty, MinLength, MaxLength } from 'class-validator';
 
-export class CreateCommentDto {
+export class CreateReviewDto {
   @IsString()
   @IsNotEmpty()
   @MinLength(1, { message: '댓글 내용은 최소 1자 이상이어야 합니다.' })
