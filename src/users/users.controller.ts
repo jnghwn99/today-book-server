@@ -12,7 +12,7 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { extractTokenOrThrow } from 'src/common/utils/cookie.util';
+import { extractTokenOrThrow } from '../common/utils/cookie.util';
 import { Request } from 'express';
 
 @Controller('users')
