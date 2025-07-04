@@ -38,7 +38,7 @@ export class BooksService {
       const response = await this.httpService.axiosRef.get(fullUrl);
       // console.log(response.data);
       return response.data as AladinBookResponse;
-    } catch (error) {
+    } catch {
       // console.error(error);
       throw new BadRequestException('Failed to fetch book details');
     }
@@ -76,7 +76,7 @@ export class BooksService {
       const response = await this.httpService.axiosRef.get(fullUrl);
       // console.log(response.data);
       return response.data as AladinBookResponse;
-    } catch (error) {
+    } catch {
       // console.error(error);
       throw new BadRequestException('Failed to fetch book details');
     }
@@ -99,7 +99,7 @@ export class BooksService {
       const response = await this.httpService.axiosRef.get(fullUrl);
       // console.log(response.data);
       return response.data as AladinBookResponse;
-    } catch (error) {
+    } catch {
       // console.error(error);
       throw new BadRequestException('Failed to fetch book details');
     }

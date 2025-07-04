@@ -12,12 +12,8 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-
-interface RequestWithCookies {
-  cookies?: {
-    jwt_token?: string;
-  };
-}
+import { extractTokenOrThrow } from 'src/common/utils/cookie.util';
+import { Request } from 'express';
 
 @Controller('users')
 export class UsersController {
@@ -29,21 +25,14 @@ export class UsersController {
   }
 
   @Get('me')
-  getCurrentUser(@Req() req: RequestWithCookies) {
-    const token = req.cookies?.jwt_token;
-    if (!token) {
-      throw new UnauthorizedException('JWT 토큰이 없습니다.');
-    }
-
+  getCurrentUser(@Req() req: Request) {
+    const token = extractTokenOrThrow(req);
     return this.usersService.getCurrentUser(token);
   }
 
   @Patch()
-  update(@Req() req: RequestWithCookies, @Body() updateUserDto: UpdateUserDto) {
-    const token = req.cookies?.jwt_token;
-    if (!token) {
-      throw new UnauthorizedException('JWT 토큰이 없습니다.');
-    }
+  update(@Req() req: Request, @Body() updateUserDto: UpdateUserDto) {
+    const token = extractTokenOrThrow(req);
     return this.usersService.update(token, updateUserDto);
   }
 }

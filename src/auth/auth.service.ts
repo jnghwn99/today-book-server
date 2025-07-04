@@ -103,6 +103,7 @@ export class AuthService {
 
   async signJwt(user: User) {
     const payload = {
+      id: user.id,
       email: user.email,
     };
     return await this.jwtService.signAsync(payload, {

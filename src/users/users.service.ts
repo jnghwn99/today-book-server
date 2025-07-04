@@ -7,8 +7,6 @@ import { validate } from 'class-validator';
 
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
@@ -20,14 +18,17 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
-    private readonly jwtService: JwtService,
-    private readonly configService: ConfigService,
     private readonly authService: AuthService,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     const user = this.usersRepository.create(createUserDto);
     return await this.usersRepository.save(user);
+  }
+
+  async findById(id: number): Promise<User | null> {
+    const user = await this.usersRepository.findOne({ where: { id } });
+    return user;
   }
 
   async findByEmail(email: string): Promise<User | null> {
@@ -48,7 +49,7 @@ export class UsersService {
         throw new UnauthorizedException('유효하지 않은 JWT 토큰입니다.');
       }
 
-      const user = await this.findByEmail(jwtPayload.email);
+      const user = await this.findById(jwtPayload.id);
       if (!user) {
         throw new NotFoundException('사용자를 찾을 수 없습니다.');
       }

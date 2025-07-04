@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { HttpModule } from '@nestjs/axios';
-import { JwtModule } from '@nestjs/jwt';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { UsersModule } from '../users/users.module';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { HttpModule } from '@nestjs/axios';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -14,7 +14,7 @@ import { UsersModule } from '../users/users.module';
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET'),
-        signOptions: { expiresIn: '1d' },
+        signOptions: { expiresIn: configService.get<string>('JWT_EXPIRES_IN') },
       }),
       inject: [ConfigService],
     }),
