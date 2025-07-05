@@ -2,7 +2,7 @@ import { IsString, IsOptional, IsNumber, IsBoolean } from 'class-validator';
 
 export class CreateBookDto {
   @IsString()
-  id: string; // ISBN13
+  isbn13: string;
 
   @IsString()
   title: string;

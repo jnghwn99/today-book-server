@@ -1,7 +1,16 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  PrimaryColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity('books')
 export class Book {
+  @PrimaryColumn()
+  isbn13: string;
+
   @Column()
   title: string;
 
@@ -16,9 +25,6 @@ export class Book {
 
   @Column({ type: 'text', nullable: true })
   description: string;
-
-  @PrimaryColumn()
-  isbn13: string;
 
   @Column({ nullable: true })
   itemId: number;
@@ -70,6 +76,16 @@ export class Book {
 
   @Column({ nullable: true })
   itemPage: number;
+
+  // 메타데이터
+  @CreateDateColumn({ name: 'created_at' })
+  createdAt: Date;
+
+  @UpdateDateColumn({ name: 'updated_at' })
+  updatedAt: Date;
+
+  @Column({ default: 0 })
+  reviewCount: number;
 }
 
 // backend/src/books/entities/book-item.type.ts (새 파일로 만들어도 되고, entity에 추가해도 됨)

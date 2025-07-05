@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
-import { BooksService } from './books.service';
-import { BooksController } from './books.controller';
-import { HttpModule } from '@nestjs/axios';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { Book } from './entities/book.entity';
 import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { HttpModule } from '@nestjs/axios';
+
+import { Book } from './entities/book.entity';
+import { BooksController } from './books.controller';
+import { BooksService } from './books.service';
 
 @Module({
   imports: [HttpModule, ConfigModule, TypeOrmModule.forFeature([Book])],

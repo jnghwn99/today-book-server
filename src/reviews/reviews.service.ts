@@ -26,7 +26,7 @@ export class ReviewsService {
   }
 
   async findReviewsByIsbn(
-    isbn: string,
+    isbn13: string,
     queryDto: FindReviewsQueryDto,
   ): Promise<PaginatedReviewResponseDto> {
     const { page = 1, limit = 10 } = queryDto;
@@ -36,12 +36,12 @@ export class ReviewsService {
 
     // 총 개수 조회
     const totalItems = await this.reviewRepository.count({
-      where: { bookIsbn13: isbn },
+      where: { bookIsbn13: isbn13 },
     });
 
     // 페이지네이션된 데이터 조회
     const reviews = await this.reviewRepository.find({
-      where: { bookIsbn13: isbn },
+      where: { bookIsbn13: isbn13 },
       relations: ['user'],
       order: { createdAt: 'DESC' },
       skip: offset,
@@ -68,11 +68,11 @@ export class ReviewsService {
     };
   }
 
-  update(isbn: string, updateReviewDto: UpdateReviewDto) {
-    return this.reviewRepository.update(isbn, updateReviewDto);
+  update(isbn13: string, updateReviewDto: UpdateReviewDto) {
+    return this.reviewRepository.update(isbn13, updateReviewDto);
   }
 
-  remove(isbn: string) {
-    return this.reviewRepository.delete(isbn);
+  remove(isbn13: string) {
+    return this.reviewRepository.delete(isbn13);
   }
 }

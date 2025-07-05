@@ -1,6 +1,6 @@
-import { AladinBookItem } from './index';
+import { AladinBookItemDto } from './aladin-book-item.dto';
 
-export interface AladinBookResponse {
+export class AladinBookResponse {
   version: string;
   logo: string;
   title: string;
@@ -12,7 +12,7 @@ export interface AladinBookResponse {
   query: string;
   searchCategoryId: number;
   searchCategoryName: string;
-  item: AladinBookItem[];
+  item: AladinBookItemDto[];
   errorCode?: string;
   errorMessage?: string;
 }

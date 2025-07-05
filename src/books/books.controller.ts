@@ -25,8 +25,8 @@ export class BooksController {
     return this.booksService.findAll(findBooksQueryDto);
   }
 
-  @Get(':isbn')
-  findOne(@Param('isbn') isbn: string) {
-    return this.booksService.findOne(isbn);
+  @Get(':isbn13')
+  findOne(@Param('isbn13') isbn13: string) {
+    return this.booksService.findOne(isbn13);
   }
 }

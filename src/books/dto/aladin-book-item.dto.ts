@@ -1,6 +1,6 @@
-import { AladinBookItemSubInfo } from './index';
+import { AladinBookItemSubInfoDto } from './aladin-book-item-sub-info.dto';
 
-export interface AladinBookItem {
+export class AladinBookItemDto {
   title: string;
   link: string;
   author: string;
@@ -22,5 +22,5 @@ export interface AladinBookItem {
   adult: boolean;
   fixedPrice: boolean;
   customerReviewRank: number;
-  subInfo: AladinBookItemSubInfo;
+  subInfo: AladinBookItemSubInfoDto;
 }

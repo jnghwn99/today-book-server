@@ -1,15 +1,16 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
-import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+
+import { Book } from './entities/book.entity';
 import {
   FindBooksQueryDto,
   SearchBooksQueryDto,
   AladinBookResponse,
-  AladinBookItem,
+  AladinBookItemDto,
 } from './dto/index';
-import { Book } from './entities/book.entity';
 
 @Injectable()
 export class BooksService {
@@ -103,7 +104,7 @@ export class BooksService {
 
       if (!book) {
         // DB에 없으면 알라딘 API에서 가져와서 저장
-        const TTBKey = this.configService.get('ALADIN_TTB_KEY');
+        const TTBKey = process.env.ALADIN_TTB_KEY;
         const baseUrl = `http://www.aladin.co.kr/ttb/api/ItemLookUp.aspx`;
         const params = new URLSearchParams({
           TTBKey: TTBKey ?? '',
@@ -116,6 +117,7 @@ export class BooksService {
         const fullUrl = `${baseUrl}?${params.toString()}`;
 
         const response = await this.httpService.axiosRef.get(fullUrl);
+        console.log(response.data);
         const aladinResponse = response.data as AladinBookResponse;
 
         if (aladinResponse.item && aladinResponse.item.length > 0) {
@@ -124,14 +126,55 @@ export class BooksService {
         }
       }
 
-      // DB에 저장된 책 정보 반환
-      return book;
+      // 메타데이터를 포함한 응답 반환
+      return book ? this.mapBookToResponseDto(book) : null;
     } catch {
       throw new BadRequestException('Failed to fetch book details');
     }
   }
 
-  async saveBookFromAladin(aladinBook: AladinBookItem): Promise<Book> {
+  private mapBookToResponseDto(book: Book) {
+    return {
+      version: '1.0.0',
+      title: '도서 상세 정보',
+      totalResults: 1,
+      startIndex: 1,
+      itemsPerPage: 1,
+      item: [
+        {
+          id: book.isbn13,
+          title: book.title,
+          link: book.link,
+          author: book.author,
+          pubDate: book.pubDate,
+          description: book.description,
+          itemId: book.itemId,
+          priceSales: book.priceSales,
+          priceStandard: book.priceStandard,
+          mallType: book.mallType,
+          stockStatus: book.stockStatus,
+          mileage: book.mileage,
+          cover: book.cover,
+          categoryId: book.categoryId,
+          categoryName: book.categoryName,
+          publisher: book.publisher,
+          salesPoint: book.salesPoint,
+          adult: book.adult,
+          fixedPrice: book.fixedPrice,
+          customerReviewRank: book.customerReviewRank,
+          subTitle: book.subTitle,
+          originalTitle: book.originalTitle,
+          itemPage: book.itemPage,
+          // 메타데이터
+          createdAt: book.createdAt,
+          updatedAt: book.updatedAt,
+          reviewCount: book.reviewCount,
+        },
+      ],
+    };
+  }
+
+  async saveBookFromAladin(aladinBook: AladinBookItemDto): Promise<Book> {
     const existingBook = await this.bookRepository.findOne({
       where: { isbn13: aladinBook.isbn13 },
     });
@@ -164,6 +207,7 @@ export class BooksService {
       subTitle: aladinBook.subInfo?.subTitle,
       originalTitle: aladinBook.subInfo?.originalTitle,
       itemPage: aladinBook.subInfo?.itemPage,
+      reviewCount: 0,
     });
 
     return this.bookRepository.save(book);
