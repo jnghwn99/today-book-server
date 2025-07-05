@@ -1,4 +1,8 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
@@ -10,7 +14,7 @@ import {
   SearchBooksQueryDto,
   AladinBookResponse,
   AladinBookItemDto,
-} from './dto/index';
+} from './dto';
 
 @Injectable()
 export class BooksService {
@@ -104,7 +108,10 @@ export class BooksService {
 
       if (!book) {
         // DB에 없으면 알라딘 API에서 가져와서 저장
-        const TTBKey = process.env.ALADIN_TTB_KEY;
+        const TTBKey = this.configService.get('ALADIN_TTB_KEY');
+        if (!TTBKey) {
+          throw new BadRequestException('알라딘 API 키가 설정되지 않았습니다.');
+        }
         const baseUrl = `http://www.aladin.co.kr/ttb/api/ItemLookUp.aspx`;
         const params = new URLSearchParams({
           TTBKey: TTBKey ?? '',
@@ -117,7 +124,7 @@ export class BooksService {
         const fullUrl = `${baseUrl}?${params.toString()}`;
 
         const response = await this.httpService.axiosRef.get(fullUrl);
-        console.log(response.data);
+
         const aladinResponse = response.data as AladinBookResponse;
 
         if (aladinResponse.item && aladinResponse.item.length > 0) {

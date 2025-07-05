@@ -68,11 +68,17 @@ export class ReviewsService {
     };
   }
 
-  update(isbn13: string, updateReviewDto: UpdateReviewDto) {
-    return this.reviewRepository.update(isbn13, updateReviewDto);
+  update(isbn13: string, updateReviewDto: UpdateReviewDto, userId: number) {
+    return this.reviewRepository.update(
+      { bookIsbn13: isbn13, userId: userId },
+      updateReviewDto,
+    );
   }
 
-  remove(isbn13: string) {
-    return this.reviewRepository.delete(isbn13);
+  remove(isbn13: string, userId: number) {
+    return this.reviewRepository.delete({
+      bookIsbn13: isbn13,
+      userId: userId,
+    });
   }
 }

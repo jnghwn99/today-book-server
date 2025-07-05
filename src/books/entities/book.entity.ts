@@ -4,7 +4,9 @@ import {
   PrimaryColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
+import { Like } from '../../likes/entities/like.entity';
 
 @Entity('books')
 export class Book {
@@ -86,6 +88,9 @@ export class Book {
 
   @Column({ default: 0 })
   reviewCount: number;
+
+  @Column({ default: 0 })
+  likeCount: number;
 }
 
 // backend/src/books/entities/book-item.type.ts (새 파일로 만들어도 되고, entity에 추가해도 됨)

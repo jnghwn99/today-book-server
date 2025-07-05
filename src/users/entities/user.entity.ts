@@ -4,7 +4,9 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
+import { Like } from '../../likes/entities/like.entity';
 
 @Entity('users')
 export class User {
@@ -28,4 +30,11 @@ export class User {
 
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
+
+  // 좋아요 관계
+  @OneToMany(
+    () => Like,
+    (like) => like.user,
+  )
+  likes: Like[];
 }

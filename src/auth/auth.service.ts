@@ -9,7 +9,7 @@ import {
   KakaoTokenRequestDto,
   KakaoTokenResponseDto,
   KakaoIdTokenPayloadDto,
-} from './dto/index';
+} from './dto';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
@@ -40,17 +40,31 @@ export class AuthService {
       code: code,
       client_secret: this.configService.get<string>('KAKAO_SECRET')!,
     };
-    const kakaoTokenResponse =
-      await this.httpService.axiosRef.post<KakaoTokenResponseDto>(
-        'https://kauth.kakao.com/oauth/token',
-        params,
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
+
+    try {
+      const kakaoTokenResponse =
+        await this.httpService.axiosRef.post<KakaoTokenResponseDto>(
+          'https://kauth.kakao.com/oauth/token',
+          params,
+          {
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
+            },
           },
-        },
+        );
+      return kakaoTokenResponse.data;
+    } catch (error) {
+      if (error.response?.data?.error === 'invalid_grant') {
+        throw new HttpException(
+          '인증 코드가 만료되었거나 이미 사용되었습니다. 다시 로그인해주세요.',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      throw new HttpException(
+        '카카오 토큰 발급 중 오류가 발생했습니다.',
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
-    return kakaoTokenResponse.data;
+    }
   }
 
   async kakaoLoginCallback(code: string, res: Response) {

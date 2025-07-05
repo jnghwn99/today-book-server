@@ -8,12 +8,23 @@ import {
   Delete,
   Req,
   UnauthorizedException,
+  UseGuards,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { extractTokenOrThrow } from '../common/utils/cookie.util';
 import { Request } from 'express';
+import { JwtAuthGuard } from '../jwt-cookie/jwt-auth.guard';
+
+// Request 타입 확장
+interface RequestWithUser extends Request {
+  user: {
+    id: number;
+    email: string;
+  };
+}
 
 @Controller('users')
 export class UsersController {
@@ -25,14 +36,27 @@ export class UsersController {
   }
 
   @Get('me')
-  getCurrentUser(@Req() req: Request) {
-    const token = extractTokenOrThrow(req);
-    return this.usersService.getCurrentUser(token);
+  @UseGuards(JwtAuthGuard)
+  async getCurrentUser(@Req() req: RequestWithUser) {
+    const userId = req.user.id;
+    return await this.usersService.findById(userId);
   }
 
   @Patch()
-  update(@Req() req: Request, @Body() updateUserDto: UpdateUserDto) {
-    const token = extractTokenOrThrow(req);
-    return this.usersService.update(token, updateUserDto);
+  @UseGuards(JwtAuthGuard)
+  async update(
+    @Req() req: RequestWithUser,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    const userId = req.user.id;
+    return await this.usersService.updateById(userId, updateUserDto);
+  }
+
+  @Delete('me')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteCurrentUser(@Req() req: RequestWithUser) {
+    const userId = req.user.id;
+    await this.usersService.deleteById(userId);
   }
 }

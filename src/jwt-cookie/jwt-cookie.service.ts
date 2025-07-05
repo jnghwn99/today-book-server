@@ -1,7 +1,12 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  Injectable,
+  HttpException,
+  HttpStatus,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { Response } from 'express';
+import { Response, Request } from 'express';
 import { JwtCookiePayload } from './dto/jwt-cookie-payload.dto';
 
 @Injectable()
@@ -10,6 +15,13 @@ export class JwtCookieService {
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
   ) {}
+
+  extractTokenOrThrow(req: Request, cookieKey = 'jwt_token'): string {
+    if (!req.cookies || !req.cookies[cookieKey]) {
+      throw new UnauthorizedException('JWT 토큰이 없습니다.');
+    }
+    return req.cookies[cookieKey];
+  }
 
   async signJwt(
     jwtCookiePayload: JwtCookiePayload | { id: number; email: string },

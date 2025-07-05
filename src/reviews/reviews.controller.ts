@@ -8,49 +8,57 @@ import {
   Delete,
   Query,
   Req,
+  UseGuards,
 } from '@nestjs/common';
 import { ReviewsService } from './reviews.service';
 import { CreateReviewDto, UpdateReviewDto, FindReviewsQueryDto } from './dto';
-import { extractTokenOrThrow } from '../common/utils/cookie.util';
 import { Request } from 'express';
-import { UsersService } from '../users/users.service';
+import { JwtAuthGuard } from '../jwt-cookie/jwt-auth.guard';
+
+// Request 타입 확장
+interface RequestWithUser extends Request {
+  user: {
+    id: number;
+    email: string;
+  };
+}
 
 @Controller('reviews')
+@UseGuards(JwtAuthGuard)
 export class ReviewsController {
-  constructor(
-    private readonly reviewsService: ReviewsService,
-    private readonly usersService: UsersService,
-  ) {}
+  constructor(private readonly reviewsService: ReviewsService) {}
 
   @Post(':isbn13')
   async create(
     @Param('isbn13') isbn13: string,
     @Body() createReviewDto: CreateReviewDto,
-    @Req() req: Request,
+    @Req() req: RequestWithUser,
   ) {
-    const token = extractTokenOrThrow(req);
-    const user = await this.usersService.getCurrentUser(token);
-    return this.reviewsService.create(isbn13, createReviewDto, user.id);
+    const userId = req.user.id;
+    return await this.reviewsService.create(isbn13, createReviewDto, userId);
   }
 
   @Get(':isbn13')
-  findReviewsByIsbn(
+  async findReviewsByIsbn(
     @Param('isbn13') isbn13: string,
     @Query() queryDto: FindReviewsQueryDto,
   ) {
-    return this.reviewsService.findReviewsByIsbn(isbn13, queryDto);
+    return await this.reviewsService.findReviewsByIsbn(isbn13, queryDto);
   }
 
   @Patch(':isbn13')
-  update(
+  async update(
     @Param('isbn13') isbn13: string,
     @Body() updateReviewDto: UpdateReviewDto,
+    @Req() req: RequestWithUser,
   ) {
-    return this.reviewsService.update(isbn13, updateReviewDto);
+    const userId = req.user.id;
+    return await this.reviewsService.update(isbn13, updateReviewDto, userId);
   }
 
   @Delete(':isbn13')
-  remove(@Param('isbn13') isbn13: string) {
-    return this.reviewsService.remove(isbn13);
+  async remove(@Param('isbn13') isbn13: string, @Req() req: RequestWithUser) {
+    const userId = req.user.id;
+    return await this.reviewsService.remove(isbn13, userId);
   }
 }
