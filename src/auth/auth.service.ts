@@ -1,10 +1,4 @@
-import {
-  forwardRef,
-  HttpException,
-  HttpStatus,
-  Inject,
-  Injectable,
-} from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import {
   KakaoTokenRequestDto,
   KakaoTokenResponseDto,
@@ -21,7 +15,6 @@ import { JwtCookieService } from '../jwt-cookie/jwt-cookie.service';
 export class AuthService {
   constructor(
     private readonly httpService: HttpService,
-    @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
     private readonly jwtCookieService: JwtCookieService,
     private readonly configService: ConfigService,
