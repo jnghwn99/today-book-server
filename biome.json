@@ -7,7 +7,7 @@
     "formatWithErrors": false,
     "indentStyle": "space",
     "indentWidth": 2,
-    "lineEnding": "crlf",
+    "lineEnding": "lf",
     "lineWidth": 80,
     "attributePosition": "auto",
     "bracketSameLine": false,

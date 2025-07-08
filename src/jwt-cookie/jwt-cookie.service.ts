@@ -17,9 +17,23 @@ export class JwtCookieService {
   ) {}
 
   extractTokenOrThrow(req: Request, cookieKey = 'jwt_token'): string {
-    if (!req.cookies || !req.cookies[cookieKey]) {
+    console.log('=== JWT 토큰 추출 디버깅 ===');
+    console.log('req.cookies:', req.cookies);
+    console.log('cookieKey:', cookieKey);
+    console.log('Headers:', req.headers);
+    
+    if (!req.cookies) {
+      console.log('❌ req.cookies가 undefined 또는 null');
+      throw new UnauthorizedException('쿠키가 없습니다. cookie-parser 설정을 확인하세요.');
+    }
+    
+    if (!req.cookies[cookieKey]) {
+      console.log('❌ JWT 토큰 쿠키를 찾을 수 없음');
+      console.log('사용 가능한 쿠키 목록:', Object.keys(req.cookies));
       throw new UnauthorizedException('JWT 토큰이 없습니다.');
     }
+    
+    console.log('✅ JWT 토큰 발견:', req.cookies[cookieKey]);
     return req.cookies[cookieKey];
   }
 
