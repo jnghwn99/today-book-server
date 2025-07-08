@@ -8,9 +8,9 @@ import { User } from '../users/entities/user.entity';
 import { JwtCookieModule } from '../jwt-cookie/jwt-cookie.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Like, Book, User]), JwtCookieModule],
-  controllers: [LikesController],
-  providers: [LikesService],
-  exports: [LikesService],
+	imports: [TypeOrmModule.forFeature([Like, Book, User]), JwtCookieModule],
+	controllers: [LikesController],
+	providers: [LikesService],
+	exports: [LikesService],
 })
 export class LikesModule {}

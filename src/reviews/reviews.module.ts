@@ -6,8 +6,8 @@ import { Review } from './entities/review.entity';
 import { JwtCookieModule } from '../jwt-cookie/jwt-cookie.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Review]), JwtCookieModule],
-  controllers: [ReviewsController],
-  providers: [ReviewsService],
+	imports: [TypeOrmModule.forFeature([Review]), JwtCookieModule],
+	controllers: [ReviewsController],
+	providers: [ReviewsService],
 })
 export class ReviewsModule {}

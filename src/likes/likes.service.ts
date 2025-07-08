@@ -1,7 +1,7 @@
 import {
-  Injectable,
-  NotFoundException,
-  ConflictException,
+	Injectable,
+	NotFoundException,
+	ConflictException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -12,96 +12,96 @@ import { LikeResponseDto } from './dto';
 
 @Injectable()
 export class LikesService {
-  constructor(
-    @InjectRepository(Like)
-    private readonly likeRepository: Repository<Like>,
-    @InjectRepository(Book)
-    private readonly bookRepository: Repository<Book>,
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
-  ) {}
+	constructor(
+		@InjectRepository(Like)
+		private readonly likeRepository: Repository<Like>,
+		@InjectRepository(Book)
+		private readonly bookRepository: Repository<Book>,
+		@InjectRepository(User)
+		private readonly userRepository: Repository<User>,
+	) {}
 
-  async createLike(userId: number, isbn13: string): Promise<LikeResponseDto> {
-    // 책이 존재하는지 확인
-    const book = await this.bookRepository.findOne({
-      where: { isbn13: isbn13 },
-    });
-    if (!book) {
-      throw new NotFoundException('책을 찾을 수 없습니다.');
-    }
+	async createLike(userId: number, isbn13: string): Promise<LikeResponseDto> {
+		// 책이 존재하는지 확인
+		const book = await this.bookRepository.findOne({
+			where: { isbn13: isbn13 },
+		});
+		if (!book) {
+			throw new NotFoundException('책을 찾을 수 없습니다.');
+		}
 
-    // 사용자가 존재하는지 확인
-    const user = await this.userRepository.findOne({ where: { id: userId } });
-    if (!user) {
-      throw new NotFoundException('사용자를 찾을 수 없습니다.');
-    }
+		// 사용자가 존재하는지 확인
+		const user = await this.userRepository.findOne({ where: { id: userId } });
+		if (!user) {
+			throw new NotFoundException('사용자를 찾을 수 없습니다.');
+		}
 
-    // 이미 좋아요를 눌렀는지 확인
-    const existingLike = await this.likeRepository.findOne({
-      where: { user: { id: userId }, book: { isbn13: isbn13 } },
-    });
+		// 이미 좋아요를 눌렀는지 확인
+		const existingLike = await this.likeRepository.findOne({
+			where: { user: { id: userId }, book: { isbn13: isbn13 } },
+		});
 
-    if (existingLike) {
-      throw new ConflictException('이미 좋아요를 눌렀습니다.');
-    }
+		if (existingLike) {
+			throw new ConflictException('이미 좋아요를 눌렀습니다.');
+		}
 
-    // 좋아요 생성
-    const like = this.likeRepository.create({
-      user: { id: userId },
-      book: { isbn13: isbn13 },
-    });
+		// 좋아요 생성
+		const like = this.likeRepository.create({
+			user: { id: userId },
+			book: { isbn13: isbn13 },
+		});
 
-    const savedLike = await this.likeRepository.save(like);
+		const savedLike = await this.likeRepository.save(like);
 
-    return {
-      id: savedLike.id,
-      userId: savedLike.user.id,
-      bookIsbn13: savedLike.book.isbn13,
-      createdAt: savedLike.createdAt,
-      updatedAt: savedLike.updatedAt,
-    };
-  }
+		return {
+			id: savedLike.id,
+			userId: savedLike.user.id,
+			bookIsbn13: savedLike.book.isbn13,
+			createdAt: savedLike.createdAt,
+			updatedAt: savedLike.updatedAt,
+		};
+	}
 
-  async removeLike(userId: number, isbn13: string): Promise<void> {
-    const like = await this.likeRepository.findOne({
-      where: { user: { id: userId }, book: { isbn13: isbn13 } },
-    });
+	async removeLike(userId: number, isbn13: string): Promise<void> {
+		const like = await this.likeRepository.findOne({
+			where: { user: { id: userId }, book: { isbn13: isbn13 } },
+		});
 
-    if (!like) {
-      throw new NotFoundException('좋아요를 찾을 수 없습니다.');
-    }
+		if (!like) {
+			throw new NotFoundException('좋아요를 찾을 수 없습니다.');
+		}
 
-    await this.likeRepository.remove(like);
-  }
+		await this.likeRepository.remove(like);
+	}
 
-  async getUserLikes(userId: number): Promise<LikeResponseDto[]> {
-    const likes = await this.likeRepository.find({
-      where: { user: { id: userId } },
-      relations: ['user', 'book'],
-    });
+	async getUserLikes(userId: number): Promise<LikeResponseDto[]> {
+		const likes = await this.likeRepository.find({
+			where: { user: { id: userId } },
+			relations: ['user', 'book'],
+		});
 
-    return likes.map((like) => ({
-      id: like.id,
-      userId: like.user.id,
-      bookIsbn13: like.book.isbn13,
-      createdAt: like.createdAt,
-      updatedAt: like.updatedAt,
-    }));
-  }
+		return likes.map((like) => ({
+			id: like.id,
+			userId: like.user.id,
+			bookIsbn13: like.book.isbn13,
+			createdAt: like.createdAt,
+			updatedAt: like.updatedAt,
+		}));
+	}
 
-  async getBookLikes(isbn13: string): Promise<number> {
-    const count = await this.likeRepository.count({
-      where: { book: { isbn13: isbn13 } },
-    });
+	async getBookLikes(isbn13: string): Promise<number> {
+		const count = await this.likeRepository.count({
+			where: { book: { isbn13: isbn13 } },
+		});
 
-    return count;
-  }
+		return count;
+	}
 
-  async isLikedByUser(userId: number, isbn13: string): Promise<boolean> {
-    const like = await this.likeRepository.findOne({
-      where: { user: { id: userId }, book: { isbn13: isbn13 } },
-    });
+	async isLikedByUser(userId: number, isbn13: string): Promise<boolean> {
+		const like = await this.likeRepository.findOne({
+			where: { user: { id: userId }, book: { isbn13: isbn13 } },
+		});
 
-    return !!like;
-  }
+		return !!like;
+	}
 }

@@ -7,9 +7,9 @@ import { HttpModule } from '@nestjs/axios';
 import { JwtCookieModule } from '../jwt-cookie/jwt-cookie.module';
 
 @Module({
-  imports: [HttpModule, UsersModule, ConfigModule, JwtCookieModule],
-  controllers: [AuthController],
-  providers: [AuthService],
-  exports: [AuthService],
+	imports: [HttpModule, UsersModule, ConfigModule, JwtCookieModule],
+	controllers: [AuthController],
+	providers: [AuthService],
+	exports: [AuthService],
 })
 export class AuthModule {}
