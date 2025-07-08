@@ -40,6 +40,7 @@ export class BooksController {
 	}
 
 	@Get(':isbn13')
+	@UseGuards(JwtAuthGuard)
 	findOne(@Param('isbn13') isbn13: string, @Req() req?: RequestWithUser) {
 		const userId = req?.user?.id; // 로그인하지 않은 경우도 처리
 		return this.booksService.findOne(isbn13, userId);
