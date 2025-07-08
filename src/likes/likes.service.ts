@@ -38,7 +38,7 @@ export class LikesService {
 
 		// 이미 좋아요를 눌렀는지 확인
 		const existingLike = await this.likeRepository.findOne({
-			where: { user: { id: userId }, book: { isbn13: isbn13 } },
+			where: { userId: userId, bookIsbn13: isbn13 },
 		});
 
 		if (existingLike) {
@@ -47,16 +47,16 @@ export class LikesService {
 
 		// 좋아요 생성
 		const like = this.likeRepository.create({
-			user: { id: userId },
-			book: { isbn13: isbn13 },
+			userId: userId,
+			bookIsbn13: isbn13,
 		});
 
 		const savedLike = await this.likeRepository.save(like);
 
 		return {
 			id: savedLike.id,
-			userId: savedLike.user.id,
-			bookIsbn13: savedLike.book.isbn13,
+			userId: savedLike.userId,
+			bookIsbn13: savedLike.bookIsbn13,
 			createdAt: savedLike.createdAt,
 			updatedAt: savedLike.updatedAt,
 		};
@@ -64,7 +64,7 @@ export class LikesService {
 
 	async removeLike(userId: number, isbn13: string): Promise<void> {
 		const like = await this.likeRepository.findOne({
-			where: { user: { id: userId }, book: { isbn13: isbn13 } },
+			where: { userId: userId, bookIsbn13: isbn13 },
 		});
 
 		if (!like) {
@@ -76,14 +76,14 @@ export class LikesService {
 
 	async getUserLikes(userId: number): Promise<LikeResponseDto[]> {
 		const likes = await this.likeRepository.find({
-			where: { user: { id: userId } },
+			where: { userId: userId },
 			relations: ['user', 'book'],
 		});
 
 		return likes.map((like) => ({
 			id: like.id,
-			userId: like.user.id,
-			bookIsbn13: like.book.isbn13,
+			userId: like.userId,
+			bookIsbn13: like.bookIsbn13,
 			createdAt: like.createdAt,
 			updatedAt: like.updatedAt,
 		}));
@@ -91,7 +91,7 @@ export class LikesService {
 
 	async getBookLikes(isbn13: string): Promise<number> {
 		const count = await this.likeRepository.count({
-			where: { book: { isbn13: isbn13 } },
+			where: { bookIsbn13: isbn13 },
 		});
 
 		return count;
@@ -99,7 +99,7 @@ export class LikesService {
 
 	async isLikedByUser(userId: number, isbn13: string): Promise<boolean> {
 		const like = await this.likeRepository.findOne({
-			where: { user: { id: userId }, book: { isbn13: isbn13 } },
+			where: { userId: userId, bookIsbn13: isbn13 },
 		});
 
 		return !!like;
