@@ -24,10 +24,10 @@ interface RequestWithUser extends Request {
 }
 
 @Controller('reviews')
-@UseGuards(JwtAuthGuard)
 export class ReviewsController {
 	constructor(private readonly reviewsService: ReviewsService) {}
 
+	@UseGuards(JwtAuthGuard)
 	@Post(':isbn13')
 	async create(
 		@Param('isbn13') isbn13: string,
@@ -46,6 +46,7 @@ export class ReviewsController {
 		return await this.reviewsService.findReviewsByIsbn(isbn13, queryDto);
 	}
 
+	@UseGuards(JwtAuthGuard)
 	@Patch(':isbn13')
 	async update(
 		@Param('isbn13') isbn13: string,
@@ -56,6 +57,7 @@ export class ReviewsController {
 		return await this.reviewsService.update(isbn13, updateReviewDto, userId);
 	}
 
+	@UseGuards(JwtAuthGuard)
 	@Delete(':isbn13')
 	async remove(@Param('isbn13') isbn13: string, @Req() req: RequestWithUser) {
 		const userId = req.user.id;
