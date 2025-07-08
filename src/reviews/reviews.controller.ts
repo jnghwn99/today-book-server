@@ -11,7 +11,13 @@ import {
 	UseGuards,
 } from '@nestjs/common';
 import { ReviewsService } from './reviews.service';
-import { CreateReviewDto, UpdateReviewDto, FindReviewsQueryDto } from './dto';
+import {
+	CreateReviewDto,
+	UpdateReviewDto,
+	FindReviewsQueryDto,
+	UpdateReviewWithIdDto,
+	DeleteReviewWithIdDto,
+} from './dto';
 import { Request } from 'express';
 import { JwtAuthGuard } from '../jwt-cookie/jwt-auth.guard';
 
@@ -50,17 +56,30 @@ export class ReviewsController {
 	@Patch(':isbn13')
 	async update(
 		@Param('isbn13') isbn13: string,
-		@Body() updateReviewDto: UpdateReviewDto,
+		@Body() updateReviewWithIdDto: UpdateReviewWithIdDto,
 		@Req() req: RequestWithUser,
 	) {
 		const userId = req.user.id;
-		return await this.reviewsService.update(isbn13, updateReviewDto, userId);
+		return await this.reviewsService.updateByIdAndIsbn(
+			isbn13,
+			updateReviewWithIdDto.reviewId,
+			{ content: updateReviewWithIdDto.content },
+			userId,
+		);
 	}
 
 	@UseGuards(JwtAuthGuard)
 	@Delete(':isbn13')
-	async remove(@Param('isbn13') isbn13: string, @Req() req: RequestWithUser) {
+	async remove(
+		@Param('isbn13') isbn13: string,
+		@Body() deleteReviewWithIdDto: DeleteReviewWithIdDto,
+		@Req() req: RequestWithUser,
+	) {
 		const userId = req.user.id;
-		return await this.reviewsService.remove(isbn13, userId);
+		return await this.reviewsService.removeByIdAndIsbn(
+			isbn13,
+			deleteReviewWithIdDto.reviewId,
+			userId,
+		);
 	}
 }

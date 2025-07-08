@@ -13,7 +13,7 @@ import { LikesModule } from '../likes/likes.module';
 	imports: [
 		ConfigModule.forRoot({
 			isGlobal: true,
-			envFilePath: '.env',
+			envFilePath: ['.env.local', '.env'], // .env.local 우선, 없으면 .env
 		}),
 		TypeOrmModule.forRootAsync({
 			imports: [ConfigModule],

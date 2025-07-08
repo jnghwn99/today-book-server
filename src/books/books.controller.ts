@@ -7,9 +7,28 @@ import {
 	Param,
 	Delete,
 	Query,
+	Req,
+	UseGuards,
 } from '@nestjs/common';
 import { BooksService } from './books.service';
 import { FindBooksQueryDto, SearchBooksQueryDto } from './dto';
+import { ReviewsService } from '../reviews/reviews.service';
+import {
+	CreateReviewDto,
+	UpdateReviewWithIdDto,
+	DeleteReviewWithIdDto,
+	FindReviewsQueryDto,
+} from '../reviews/dto';
+import { Request } from 'express';
+import { JwtAuthGuard } from '../jwt-cookie/jwt-auth.guard';
+
+// Request 타입 확장
+interface RequestWithUser extends Request {
+	user: {
+		id: number;
+		email: string;
+	};
+}
 
 @Controller('books')
 export class BooksController {
