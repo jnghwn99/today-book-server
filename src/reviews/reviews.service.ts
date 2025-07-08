@@ -64,7 +64,7 @@ export class ReviewsService {
 
 		return {
 			pagination,
-			data: reviews,
+			item: reviews,
 		};
 	}
 
