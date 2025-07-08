@@ -17,23 +17,9 @@ export class JwtCookieService {
   ) {}
 
   extractTokenOrThrow(req: Request, cookieKey = 'jwt_token'): string {
-    console.log('=== JWT 토큰 추출 디버깅 ===');
-    console.log('req.cookies:', req.cookies);
-    console.log('cookieKey:', cookieKey);
-    console.log('Headers:', req.headers);
-    
-    if (!req.cookies) {
-      console.log('❌ req.cookies가 undefined 또는 null');
-      throw new UnauthorizedException('쿠키가 없습니다. cookie-parser 설정을 확인하세요.');
-    }
-    
-    if (!req.cookies[cookieKey]) {
-      console.log('❌ JWT 토큰 쿠키를 찾을 수 없음');
-      console.log('사용 가능한 쿠키 목록:', Object.keys(req.cookies));
+    if (!req.cookies || !req.cookies[cookieKey]) {
       throw new UnauthorizedException('JWT 토큰이 없습니다.');
     }
-    
-    console.log('✅ JWT 토큰 발견:', req.cookies[cookieKey]);
     return req.cookies[cookieKey];
   }
 
@@ -74,10 +60,13 @@ export class JwtCookieService {
   ): Promise<string> {
     const jwtToken = await this.signJwt(payload);
 
+    const nodeEnv = this.configService.get<string>('NODE_ENV');
+    const isProduction = nodeEnv === 'production';
+      
     const cookieOptions = {
       httpOnly: true,
-      secure: this.configService.get<string>('NODE_ENV') === 'production',
-      sameSite: 'lax' as const,
+      secure: Boolean(isProduction), // 명시적으로 boolean 변환
+      sameSite: (isProduction ? 'none' : 'lax') as 'none' | 'lax', // 타입 명시
       path: '/',
       maxAge: 24 * 60 * 60 * 1000, // 24시간
     };
@@ -87,10 +76,13 @@ export class JwtCookieService {
   }
 
   clearJwtCookie(res: Response): void {
+    const nodeEnv = this.configService.get<string>('NODE_ENV');
+    const isProduction = nodeEnv === 'production';
+    
     res.clearCookie('jwt_token', {
       httpOnly: true,
-      secure: this.configService.get<string>('NODE_ENV') === 'production',
-      sameSite: 'lax',
+      secure: Boolean(isProduction), // 명시적으로 boolean 변환
+      sameSite: (isProduction ? 'none' : 'lax') as 'none' | 'lax', // 타입 명시
       path: '/',
     });
   }
