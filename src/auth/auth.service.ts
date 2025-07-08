@@ -21,7 +21,7 @@ export class AuthService {
   ) {}
 
   kakaoLogin() {
-    const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${process.env.KAKAO_ID}&redirect_uri=${process.env.KAKAO_REDIRECT_URI}&response_type=code&prompt=login`;
+    const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${this.configService.get<string>('KAKAO_ID')}&redirect_uri=${this.configService.get<string>('KAKAO_REDIRECT_URI')}&response_type=code&prompt=login`;
     return kakaoAuthUrl;
   }
 

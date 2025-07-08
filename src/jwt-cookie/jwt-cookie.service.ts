@@ -66,7 +66,7 @@ export class JwtCookieService {
     const cookieOptions = {
       httpOnly: true,
       secure: Boolean(isProduction), // 명시적으로 boolean 변환
-      sameSite: (isProduction ? 'none' : 'lax') as 'none' | 'lax', // 타입 명시
+      sameSite: (isProduction ? 'none' : 'lax') as 'none' | 'lax', // 환경에 따라 동적 설정
       path: '/',
       maxAge: 24 * 60 * 60 * 1000, // 24시간
     };
@@ -82,7 +82,7 @@ export class JwtCookieService {
     res.clearCookie('jwt_token', {
       httpOnly: true,
       secure: Boolean(isProduction), // 명시적으로 boolean 변환
-      sameSite: (isProduction ? 'none' : 'lax') as 'none' | 'lax', // 타입 명시
+      sameSite: (isProduction ? 'none' : 'lax') as 'none' | 'lax', // 환경에 따라 동적 설정
       path: '/',
     });
   }
