@@ -6,9 +6,15 @@ import { HttpModule } from '@nestjs/axios';
 import { Book } from './entities/book.entity';
 import { BooksController } from './books.controller';
 import { BooksService } from './books.service';
+import { LikesModule } from '../likes/likes.module';
 
 @Module({
-	imports: [HttpModule, ConfigModule, TypeOrmModule.forFeature([Book])],
+	imports: [
+		HttpModule,
+		ConfigModule,
+		TypeOrmModule.forFeature([Book]),
+		LikesModule,
+	],
 	controllers: [BooksController],
 	providers: [BooksService],
 	exports: [BooksService],

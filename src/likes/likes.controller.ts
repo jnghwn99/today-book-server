@@ -44,7 +44,7 @@ export class LikesController {
 		return { count };
 	}
 
-	@Get('book/:isbn/check')
+	@Get('book/:isbn13/check')
 	async checkUserLike(@Request() req, @Param('isbn13') isbn13: string) {
 		const userId = req.user.id;
 		const isLiked = await this.likesService.isLikedByUser(userId, isbn13);

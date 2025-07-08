@@ -15,6 +15,7 @@ import {
 	AladinBookResponse,
 	AladinBookItemDto,
 } from './dto';
+import { LikesService } from '../likes/likes.service';
 
 @Injectable()
 export class BooksService {
@@ -23,6 +24,7 @@ export class BooksService {
 		private readonly configService: ConfigService,
 		@InjectRepository(Book)
 		private bookRepository: Repository<Book>,
+		private readonly likesService: LikesService,
 	) {}
 
 	async search(searchBookQueryDto: SearchBooksQueryDto) {
@@ -101,7 +103,7 @@ export class BooksService {
 		}
 	}
 
-	async findOne(isbn: string) {
+	async findOne(isbn: string, userId?: number) {
 		try {
 			// 먼저 DB에서 책 정보 확인
 			let book = await this.findBookByIsbn(isbn);
@@ -133,14 +135,20 @@ export class BooksService {
 				}
 			}
 
+			// 좋아요 상태 확인 (로그인 안 된 경우 기본값 false)
+			let isLiked = false;
+			if (book && userId) {
+				isLiked = await this.likesService.isLikedByUser(userId, book.isbn13);
+			}
+
 			// 메타데이터를 포함한 응답 반환
-			return book ? this.mapBookToResponseDto(book) : null;
+			return book ? this.mapBookToResponseDto(book, isLiked) : null;
 		} catch {
 			throw new BadRequestException('Failed to fetch book details');
 		}
 	}
 
-	private mapBookToResponseDto(book: Book) {
+	private mapBookToResponseDto(book: Book, isLiked: boolean = false) {
 		return {
 			version: '1.0.0',
 			title: '도서 상세 정보',
@@ -176,6 +184,8 @@ export class BooksService {
 					createdAt: book.createdAt,
 					updatedAt: book.updatedAt,
 					reviewCount: book.reviewCount,
+					// 좋아요 상태 (항상 포함, 비로그인시 false)
+					isLiked: isLiked,
 				},
 			],
 		};
