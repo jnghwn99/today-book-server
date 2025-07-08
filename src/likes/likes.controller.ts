@@ -22,14 +22,23 @@ export class LikesController {
 	@HttpCode(HttpStatus.CREATED)
 	async createLike(@Request() req, @Param('isbn13') isbn13: string) {
 		const userId = req.user.id;
-		return await this.likesService.createLike(userId, isbn13);
+		const like = await this.likesService.createLike(userId, isbn13);
+		return {
+			...like,
+			message: '좋아요가 추가되었습니다.',
+			isLiked: true,
+		};
 	}
 
 	@Delete(':isbn13')
-	@HttpCode(HttpStatus.NO_CONTENT)
+	@HttpCode(HttpStatus.OK)
 	async removeLike(@Request() req, @Param('isbn13') isbn13: string) {
 		const userId = req.user.id;
 		await this.likesService.removeLike(userId, isbn13);
+		return {
+			message: '좋아요가 취소되었습니다.',
+			isLiked: false,
+		};
 	}
 
 	@Get('me')
