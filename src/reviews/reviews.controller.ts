@@ -13,7 +13,6 @@ import {
 import { ReviewsService } from './reviews.service';
 import {
 	CreateReviewDto,
-	UpdateReviewDto,
 	FindReviewsQueryDto,
 	UpdateReviewWithIdDto,
 	DeleteReviewWithIdDto,

@@ -84,8 +84,8 @@ export class ReviewsService {
 
 	// ISBN과 리뷰 ID로 수정 (더 안전한 검증)
 	async updateByIdAndIsbn(
-		reviewId: number,
 		isbn13: string,
+		reviewId: number,
 		updateReviewDto: UpdateReviewDto,
 		userId: number,
 	) {
@@ -115,7 +115,7 @@ export class ReviewsService {
 	}
 
 	// ISBN과 리뷰 ID로 삭제 (더 안전한 검증)
-	async removeByIdAndIsbn(reviewId: number, isbn13: string, userId: number) {
+	async removeByIdAndIsbn(isbn13: string, reviewId: number, userId: number) {
 		// 1. 리뷰 존재 여부 및 권한 확인 (ID + ISBN + 사용자 모두 일치해야 함)
 		const existingReview = await this.reviewRepository.findOne({
 			where: {
