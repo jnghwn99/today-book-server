@@ -7,6 +7,7 @@ import { Book } from './entities/book.entity';
 import { BooksController } from './books.controller';
 import { BooksService } from './books.service';
 import { LikesModule } from '../likes/likes.module';
+import { JwtCookieModule } from '../jwt-cookie/jwt-cookie.module';
 
 @Module({
 	imports: [
@@ -14,6 +15,7 @@ import { LikesModule } from '../likes/likes.module';
 		ConfigModule,
 		TypeOrmModule.forFeature([Book]),
 		LikesModule,
+		JwtCookieModule,
 	],
 	controllers: [BooksController],
 	providers: [BooksService],
