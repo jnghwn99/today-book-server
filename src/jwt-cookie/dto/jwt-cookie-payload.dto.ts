@@ -1,9 +1,9 @@
-import { IsEmail, IsNotEmpty, IsNumber } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 
 export class JwtCookiePayload {
-	@IsNumber()
+	@IsString()
 	@IsNotEmpty()
-	id: number;
+	id: string;
 
 	@IsEmail()
 	@IsNotEmpty()

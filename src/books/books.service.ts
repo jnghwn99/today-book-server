@@ -103,7 +103,7 @@ export class BooksService {
 		}
 	}
 
-	async findOne(isbn: string, userId?: number) {
+	async findOne(isbn: string, userId?: string) {
 		try {
 			// 먼저 DB에서 책 정보 확인
 			let book = await this.findBookByIsbn(isbn);

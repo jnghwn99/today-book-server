@@ -7,7 +7,7 @@ import { OptionalAuthGuard } from '../jwt-cookie/optional-auth.guard';
 // Request 타입 확장
 interface RequestWithUser extends Request {
 	user: {
-		id: number;
+		id: string;
 		email: string;
 	};
 }

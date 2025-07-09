@@ -19,7 +19,7 @@ export class Review {
 	content: string;
 
 	@Column({ name: 'user_id' })
-	userId: number;
+	userId: string;
 
 	@Column({ name: 'book_isbn13' })
 	bookIsbn13: string;

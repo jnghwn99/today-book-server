@@ -21,7 +21,7 @@ export class ReviewsService {
 		private reviewRepository: Repository<Review>,
 	) {}
 
-	async create(isbn: string, createReviewDto: CreateReviewDto, userId: number) {
+	async create(isbn: string, createReviewDto: CreateReviewDto, userId: string) {
 		// console.log('=== ReviewsService.create 호출 ===');
 		// console.log('ISBN:', isbn);
 		// console.log('Review DTO:', createReviewDto);
@@ -99,7 +99,7 @@ export class ReviewsService {
 	async update(
 		isbn13: string,
 		updateReviewDto: UpdateReviewDto,
-		userId: number,
+		userId: string,
 	) {
 		// 1. 기존 리뷰 존재 여부 확인
 		const existingReview = await this.reviewRepository.findOne({
@@ -125,7 +125,7 @@ export class ReviewsService {
 		});
 	}
 
-	async remove(isbn13: string, userId: number) {
+	async remove(isbn13: string, userId: string) {
 		// 1. 기존 리뷰 존재 여부 확인
 		const existingReview = await this.reviewRepository.findOne({
 			where: { bookIsbn13: isbn13, userId: userId },

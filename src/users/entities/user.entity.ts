@@ -10,8 +10,8 @@ import { Like } from '../../likes/entities/like.entity';
 
 @Entity('users')
 export class User {
-	@PrimaryGeneratedColumn()
-	id: number;
+	@PrimaryGeneratedColumn('uuid')
+	id: string;
 
 	//body->kakao_account.email : KakaoAccount:string
 	@Column({ unique: true, nullable: true })

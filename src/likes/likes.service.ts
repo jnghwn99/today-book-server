@@ -21,7 +21,7 @@ export class LikesService {
 		private readonly userRepository: Repository<User>,
 	) {}
 
-	async createLike(userId: number, isbn13: string): Promise<LikeResponseDto> {
+	async createLike(userId: string, isbn13: string): Promise<LikeResponseDto> {
 		// 책이 존재하는지 확인
 		const book = await this.bookRepository.findOne({
 			where: { isbn13: isbn13 },
@@ -62,7 +62,7 @@ export class LikesService {
 		};
 	}
 
-	async removeLike(userId: number, isbn13: string): Promise<void> {
+	async removeLike(userId: string, isbn13: string): Promise<void> {
 		const like = await this.likeRepository.findOne({
 			where: { userId: userId, bookIsbn13: isbn13 },
 		});
@@ -74,7 +74,7 @@ export class LikesService {
 		await this.likeRepository.remove(like);
 	}
 
-	async getUserLikes(userId: number): Promise<LikeWithBookResponseDto[]> {
+	async getUserLikes(userId: string): Promise<LikeWithBookResponseDto[]> {
 		const likes = await this.likeRepository.find({
 			where: { userId: userId },
 			relations: ['user', 'book'],
@@ -110,7 +110,7 @@ export class LikesService {
 		return count;
 	}
 
-	async isLikedByUser(userId: number, isbn13: string): Promise<boolean> {
+	async isLikedByUser(userId: string, isbn13: string): Promise<boolean> {
 		const like = await this.likeRepository.findOne({
 			where: { userId: userId, bookIsbn13: isbn13 },
 		});

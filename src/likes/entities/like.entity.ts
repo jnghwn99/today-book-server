@@ -18,7 +18,7 @@ export class Like {
 	id: number;
 
 	@Column()
-	userId: number;
+	userId: string;
 
 	@Column()
 	bookIsbn13: string;

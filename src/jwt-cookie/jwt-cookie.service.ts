@@ -24,7 +24,7 @@ export class JwtCookieService {
 	}
 
 	async signJwt(
-		jwtCookiePayload: JwtCookiePayload | { id: number; email: string },
+		jwtCookiePayload: JwtCookiePayload | { id: string; email: string },
 	): Promise<string> {
 		return await this.jwtService.signAsync(jwtCookiePayload, {
 			secret: this.configService.get<string>('JWT_SECRET'),
@@ -56,7 +56,7 @@ export class JwtCookieService {
 
 	async setJwtCookie(
 		res: Response,
-		payload: JwtCookiePayload | { id: number; email: string },
+		payload: JwtCookiePayload | { id: string; email: string },
 	): Promise<string> {
 		const jwtToken = await this.signJwt(payload);
 

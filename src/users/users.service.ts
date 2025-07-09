@@ -18,7 +18,7 @@ export class UsersService {
 		return await this.usersRepository.save(user);
 	}
 
-	async findById(id: number): Promise<User | null> {
+	async findById(id: string): Promise<User | null> {
 		const user = await this.usersRepository.findOne({ where: { id } });
 		return user;
 	}
@@ -28,7 +28,7 @@ export class UsersService {
 		return user;
 	}
 
-	async updateById(userId: number, updateUserDto: UpdateUserDto) {
+	async updateById(userId: string, updateUserDto: UpdateUserDto) {
 		const user = await this.findById(userId);
 		if (!user) {
 			throw new NotFoundException('사용자를 찾을 수 없습니다.');
@@ -36,7 +36,7 @@ export class UsersService {
 		return await this.usersRepository.save({ ...user, ...updateUserDto });
 	}
 
-	async deleteById(userId: number): Promise<void> {
+	async deleteById(userId: string): Promise<void> {
 		const user = await this.findById(userId);
 		if (!user) {
 			throw new NotFoundException('사용자를 찾을 수 없습니다.');
