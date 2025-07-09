@@ -8,7 +8,7 @@ import { Repository } from 'typeorm';
 import { Like } from './entities/like.entity';
 import { Book } from '../books/entities/book.entity';
 import { User } from '../users/entities/user.entity';
-import { LikeResponseDto } from './dto';
+import { LikeResponseDto, LikeWithBookResponseDto } from './dto';
 
 @Injectable()
 export class LikesService {
@@ -74,10 +74,11 @@ export class LikesService {
 		await this.likeRepository.remove(like);
 	}
 
-	async getUserLikes(userId: number): Promise<LikeResponseDto[]> {
+	async getUserLikes(userId: number): Promise<LikeWithBookResponseDto[]> {
 		const likes = await this.likeRepository.find({
 			where: { userId: userId },
 			relations: ['user', 'book'],
+			order: { createdAt: 'DESC' }, // 최신순 정렬
 		});
 
 		return likes.map((like) => ({
@@ -86,6 +87,18 @@ export class LikesService {
 			bookIsbn13: like.bookIsbn13,
 			createdAt: like.createdAt,
 			updatedAt: like.updatedAt,
+			book: {
+				isbn13: like.book.isbn13,
+				title: like.book.title,
+				author: like.book.author,
+				publisher: like.book.publisher,
+				pubDate: like.book.pubDate,
+				cover: like.book.cover,
+				description: like.book.description,
+				priceSales: like.book.priceSales,
+				priceStandard: like.book.priceStandard,
+				categoryName: like.book.categoryName,
+			},
 		}));
 	}
 
