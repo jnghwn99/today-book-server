@@ -20,7 +20,7 @@ import {
 	FindReviewsQueryDto,
 } from '../reviews/dto';
 import { Request } from 'express';
-import { JwtAuthGuard } from '../jwt-cookie/jwt-auth.guard';
+import { OptionalAuthGuard } from '../jwt-cookie/optional-auth.guard';
 
 // Request 타입 확장
 interface RequestWithUser extends Request {
@@ -40,7 +40,7 @@ export class BooksController {
 	}
 
 	@Get(':isbn13')
-	@UseGuards(JwtAuthGuard)
+	@UseGuards(OptionalAuthGuard)
 	findOne(@Param('isbn13') isbn13: string, @Req() req?: RequestWithUser) {
 		const userId = req?.user?.id; // 로그인하지 않은 경우도 처리
 		return this.booksService.findOne(isbn13, userId);

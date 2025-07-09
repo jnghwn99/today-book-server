@@ -3,6 +3,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtCookieService } from './jwt-cookie.service';
 import { JwtCookieController } from './jwt-cookie.controller';
+import { OptionalAuthGuard } from './optional-auth.guard';
 
 @Module({
 	imports: [
@@ -18,7 +19,7 @@ import { JwtCookieController } from './jwt-cookie.controller';
 		}),
 	],
 	controllers: [JwtCookieController],
-	providers: [JwtCookieService],
-	exports: [JwtCookieService],
+	providers: [JwtCookieService, OptionalAuthGuard],
+	exports: [JwtCookieService, OptionalAuthGuard],
 })
 export class JwtCookieModule {}
