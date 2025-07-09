@@ -17,12 +17,21 @@ export class ReviewsService {
 		private reviewRepository: Repository<Review>,
 	) {}
 
-	create(isbn: string, createReviewDto: CreateReviewDto, userId: number) {
-		return this.reviewRepository.save({
+	async create(isbn: string, createReviewDto: CreateReviewDto, userId: number) {
+		console.log('=== ReviewsService.create 호출 ===');
+		console.log('ISBN:', isbn);
+		console.log('Review DTO:', createReviewDto);
+		console.log('사용자 ID:', userId);
+
+		const result = await this.reviewRepository.save({
 			content: createReviewDto.content,
 			bookIsbn13: isbn,
 			userId: userId,
 		});
+
+		console.log('리뷰 저장 결과:', result);
+		console.log('=== ReviewsService.create 완료 ===');
+		return result;
 	}
 
 	async findReviewsByIsbn(

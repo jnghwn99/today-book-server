@@ -39,8 +39,23 @@ export class ReviewsController {
 		@Body() createReviewDto: CreateReviewDto,
 		@Req() req: RequestWithUser,
 	) {
+		console.log('=== POST /reviews/:isbn13 호출됨 ===');
+		console.log('ISBN13:', isbn13);
+		console.log('Request Body:', createReviewDto);
+		console.log('사용자 ID:', req.user.id);
+		console.log('사용자 이메일:', req.user.email);
+
 		const userId = req.user.id;
-		return await this.reviewsService.create(isbn13, createReviewDto, userId);
+		const result = await this.reviewsService.create(
+			isbn13,
+			createReviewDto,
+			userId,
+		);
+
+		console.log('리뷰 생성 결과:', result);
+		console.log('=== POST 요청 처리 완료 ===');
+
+		return result;
 	}
 
 	@Get(':isbn13')
