@@ -24,7 +24,7 @@ export class ReviewsService {
 		console.log('사용자 ID:', userId);
 
 		const result = await this.reviewRepository.save({
-			content: createReviewDto.content,
+			content: createReviewDto.text,
 			bookIsbn13: isbn,
 			userId: userId,
 		});

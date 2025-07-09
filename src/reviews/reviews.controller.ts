@@ -77,7 +77,7 @@ export class ReviewsController {
 		return await this.reviewsService.updateByIdAndIsbn(
 			isbn13,
 			updateReviewWithIdDto.reviewId,
-			{ content: updateReviewWithIdDto.content },
+			{ content: updateReviewWithIdDto.text },
 			userId,
 		);
 	}
