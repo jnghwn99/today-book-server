@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+	Injectable,
+	NotFoundException,
+	ConflictException,
+} from '@nestjs/common';
 import {
 	CreateReviewDto,
 	UpdateReviewDto,
@@ -18,11 +22,26 @@ export class ReviewsService {
 	) {}
 
 	async create(isbn: string, createReviewDto: CreateReviewDto, userId: number) {
-		console.log('=== ReviewsService.create 호출 ===');
-		console.log('ISBN:', isbn);
-		console.log('Review DTO:', createReviewDto);
-		console.log('사용자 ID:', userId);
+		// console.log('=== ReviewsService.create 호출 ===');
+		// console.log('ISBN:', isbn);
+		// console.log('Review DTO:', createReviewDto);
+		// console.log('사용자 ID:', userId);
 
+		// 1. 기존 리뷰 존재 여부 확인
+		const existingReview = await this.reviewRepository.findOne({
+			where: {
+				bookIsbn13: isbn,
+				userId: userId,
+			},
+		});
+
+		if (existingReview) {
+			throw new ConflictException(
+				'이미 이 책에 대한 리뷰를 작성하셨습니다. 한 책당 하나의 리뷰만 작성할 수 있습니다.',
+			);
+		}
+
+		// 2. 새 리뷰 생성
 		const result = await this.reviewRepository.save({
 			content: createReviewDto.content,
 			bookIsbn13: isbn,
@@ -77,17 +96,54 @@ export class ReviewsService {
 		};
 	}
 
-	update(isbn13: string, updateReviewDto: UpdateReviewDto, userId: number) {
-		return this.reviewRepository.update(
+	async update(
+		isbn13: string,
+		updateReviewDto: UpdateReviewDto,
+		userId: number,
+	) {
+		// 1. 기존 리뷰 존재 여부 확인
+		const existingReview = await this.reviewRepository.findOne({
+			where: { bookIsbn13: isbn13, userId: userId },
+		});
+
+		if (!existingReview) {
+			throw new NotFoundException(
+				'수정할 리뷰를 찾을 수 없습니다. 먼저 리뷰를 작성해주세요.',
+			);
+		}
+
+		// 2. 업데이트 수행
+		await this.reviewRepository.update(
 			{ bookIsbn13: isbn13, userId: userId },
 			updateReviewDto,
 		);
+
+		// 3. 수정된 리뷰 반환
+		return await this.reviewRepository.findOne({
+			where: { bookIsbn13: isbn13, userId: userId },
+			relations: ['user'],
+		});
 	}
 
-	remove(isbn13: string, userId: number) {
-		return this.reviewRepository.delete({
+	async remove(isbn13: string, userId: number) {
+		// 1. 기존 리뷰 존재 여부 확인
+		const existingReview = await this.reviewRepository.findOne({
+			where: { bookIsbn13: isbn13, userId: userId },
+		});
+
+		if (!existingReview) {
+			throw new NotFoundException('삭제할 리뷰를 찾을 수 없습니다.');
+		}
+
+		// 2. 삭제 수행
+		await this.reviewRepository.delete({
 			bookIsbn13: isbn13,
 			userId: userId,
 		});
+
+		return {
+			message: '리뷰가 성공적으로 삭제되었습니다.',
+			deletedReviewId: existingReview.id,
+		};
 	}
 }
