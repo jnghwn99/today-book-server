@@ -109,4 +109,11 @@ export class AuthService {
 			throw new HttpException('ID 토큰 디코딩 실패', HttpStatus.BAD_REQUEST);
 		}
 	}
+
+	logout(res: Response) {
+		this.jwtCookieService.clearJwtCookie(res);
+		return {
+			message: '로그아웃되었습니다.',
+		};
+	}
 }

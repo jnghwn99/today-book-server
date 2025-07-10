@@ -27,4 +27,9 @@ export class AuthController {
 		const url = await this.authService.kakaoLoginCallback(code, res);
 		return { url };
 	}
+
+	@Post('logout')
+	logout(@Res() res: Response) {
+		return this.authService.logout(res);
+	}
 }
